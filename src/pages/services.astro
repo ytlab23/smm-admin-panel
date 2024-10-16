@@ -1,0 +1,265 @@
+---
+import AdminLayout from "./layouts/adminLayout.astro";
+import TextInput from "./components[admin]/TextInput.astro";
+import ServiceChip from "./components[admin]/ServiceChip.astro";
+import { isAdminLoggedIn } from "./js/utils";
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/admin/signin/");
+}
+
+const SiteData = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+let showOverlay,
+    messageToShow = "";
+
+// When User wants to create/add new Service/Platform
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+
+        const response = await fetch(Astro.site + "api/services.json", {
+            method: "POST",
+            body: data,
+        });
+
+        const APIResponse = await response.json();
+        if (APIResponse.message == "Service Data Saved Successfully") {
+            if(SiteData[0].siteDeployHook){
+                const deploymentHook1 = await fetch(SiteData[0].siteDeployHook, {
+                    method: "POST"
+                });
+                console.log(`Deployment trigger at ${SiteData[0].siteDeployHook}`);
+                console.log(`Webhook For Site - smmsearch.io`);
+                console.log(`Status`, deploymentHook1);
+            }
+
+            messageToShow = "New Service added";
+
+            Astro.redirect("admin/services");
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+
+// When User wants to fetch all services
+
+const allServicesFetch = await fetch(Astro.site + "api/services.json");
+const allServices = await allServicesFetch.json();
+---
+
+<AdminLayout
+    pageName="Manage Services/Social Sites"
+    pageTitle="Manage Services"
+>
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+            />
+        )
+    }
+    <div
+        class="servicesContainer w-full relative"
+    >
+        <span class="flex flex-wrap items-center gap-4 p-5">
+            <button id="serviceAddBtn"
+                type="button"
+                class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                ><i class="fa-solid fa-plus"></i> Add New</button
+            >
+            {allServices.map((service: any) => <ServiceChip {service} />)}
+        </span>
+
+        <div class="Overlay serviceForm top-0 absolute invisible size-full z-[1] bg-[#525252a5] p-6">
+            <form
+                method="post"
+                class="w-full sticky top-[10vh] p-6 bg-[#f0f8ff] rounded-md flex flex-col justify-center items-center gap-5">
+                <i class="closeBtn serviceForm absolute -right-2 -top-2 cursor-pointer fa-solid fa-circle-xmark text-xl"></i>
+                <div class="formContainer flex w-full lg:gap-24 flex-col-reverse lg:flex-row ">
+                    <div class="fields flex flex-col gap-5 lg:w-2/4 w-full">
+                        <TextInput
+                            isRequired={true}
+                            placeholder="eg- Facebook"
+                            textBoxId="serviceName"
+                            textLabelText="Platform/Service Name"
+                        />
+
+                        <span
+                            class="flex justify-center items-center gap-4 border-2 border-dashed rounded-md"
+                        >
+                            <img
+                                id="uploadedImage"
+                                src="/assets/images/logo-placeholder-image.png"
+                                class="size-20 cursor-pointer"
+                                onclick="document.getElementById(`logoFile`).click();"
+                            />
+                            <input
+                                type="file"
+                                name="logoFile"
+                                id="logoFile"
+                                class="text-xs w-fit"
+                                accept="image/png, image/webp, image/avif"
+                            />
+                        </span>
+
+                        <span class="flex gap-3 items-end">
+                            <TextInput
+                                isRequired={true}
+                                placeholder="eg- #fdfdfd"
+                                textBoxId="serviceColor"
+                                textLabelText="Pick a theme color for Service background"
+                            />
+                            <input
+                                type="color"
+                                name="serviceColorPicker"
+                                id="serviceColorPicker"
+                                class="cursor-pointer size-10"
+                            />
+                        </span>
+                    </div>
+
+                    <div class="notes lg:w-2/4 w-full">
+                        <ol class="list-decimal text-sm flex flex-col gap-5">
+                            <li>
+                                Services are nothing but platform or social
+                                websites. Eg- Facebook, Instagram
+                            </li>
+                            <li>
+                                Choose a logo image of the social website in PNG
+                                format and has transparent background.
+                            </li>
+                            <li>
+                                Theme Color is the color related to the Social
+                                Website. Eg- Blue for Facebook. This color will
+                                be used as the background color of Services in
+                                your main site
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <input type="hidden" name="imageName" id="imageName" />
+                <input type="hidden" name="imageBase64" id="imageBase64" />
+                <input type="hidden" name="imageFileType" id="imageFileType" />
+
+                <button
+                    type="submit"
+                    class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                    ><i class="fa-solid fa-play"></i> Save</button
+                >
+            </form>
+        </div>
+    </div>
+</AdminLayout>
+
+<script is:inline>
+    //#region Services form Fields
+    document
+        .getElementById("logoFile")
+        .addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                // console.log(file);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = function () {
+                    const imageDataURL = reader.result;
+                    // const imgbody = new Blob([imageDataURL] , {type : file.type})
+
+                    document.getElementById("imageName").value = file.name;
+                    document.getElementById("uploadedImage").src = imageDataURL;
+                    document.getElementById("imageBase64").value =
+                        imageDataURL.split("base64,")[1];
+                    document.getElementById("imageFileType").value = file.type;
+
+                    // console.log(imgbody);
+                };
+            }
+        });
+
+    document
+        .getElementById("serviceColorPicker")
+        .addEventListener("change", function (event) {
+            document.getElementById("serviceColor").value =
+                document.getElementById("serviceColorPicker").value;
+        });
+    //#endregion
+
+    //#region Add Service Form Pop Up
+    function triggerServiceForm() {
+        document
+            .querySelector(".Overlay.serviceForm")
+            .classList.toggle("invisible");
+        document.querySelector("#serviceName").value = "";
+        document
+            .querySelector("#uploadedImage")
+            .setAttribute("src", "/assets/images/logo-placeholder-image.png");
+        document.querySelector("#serviceColor").value = "";
+    }
+    const serviceBtn = document.getElementById("serviceAddBtn");
+    const serviceCloseBtn = document.querySelector(".closeBtn.serviceForm");
+    serviceBtn.onclick = () => triggerServiceForm();
+    serviceCloseBtn.onclick = () => triggerServiceForm();
+    //#endregion
+
+    //#region Service Delete Functionality
+    var allDeleteBtns = document.querySelectorAll(
+        ".servicesContainer .deleteBtn",
+    );
+    allDeleteBtns.forEach((serviceDeletebtn) => {
+        serviceDeletebtn.addEventListener("click", async () => {
+
+            var resp = window.confirm(`Are you sure you want to delete ${serviceDeletebtn.previousElementSibling.textContent} service?`);
+            if(resp == true)
+            await fetch(
+                    document.body.dataset.apiSite + "api/services/" +
+                        serviceDeletebtn.getAttribute("data-service-id").toString(),
+                    {
+                        method: "DELETE",
+                    },
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        var message = "";
+                        if (data.status != 200) {
+                            message =
+                                "Service NOT Deleted. An problem occured while deleting";
+                        } else {
+                            message = "Service Deleted";
+                            serviceDeletebtn.parentElement.remove();
+                        }
+    
+                        Toastify({
+                            text: message,
+                            duration: 3000,
+                            close: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background:
+                                    "linear-gradient(to right, #5344f5, #3dbbc9)",
+                            },
+                            onClick: function () {}, // Callback after click
+                        }).showToast();
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1200);
+                    });
+        });
+    });
+    //#endregion
+</script>

@@ -1,0 +1,68 @@
+---
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+import AdminPanelFields from "./components[admin]/adminPanelFields.astro";
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/signin/");
+}
+
+const SiteData = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+// console.log(SiteData);
+
+var messageToShow = "";
+let showOverlay = false;
+
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+
+        const response = await fetch(Astro.site + "api/panels.json", {
+            method: "POST",
+            body: data,
+        });
+
+        const APIResponse = await response.json();
+        if (APIResponse.message == "Data Saved Successfully") {
+            if(SiteData[0].siteDeployHook){
+                const deploymentHook1 = await fetch(SiteData[0].siteDeployHook, {
+                    method: "POST"
+                });
+                console.log(`Deployment trigger at ${SiteData[0].siteDeployHook}`);
+                console.log(`Webhook For Site - smmsearch.io`);
+                console.log(`Status`, deploymentHook1);
+            }
+            
+            messageToShow = "SMM Panel is saved. Click here to see all Saved SMM Panels";
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+---
+
+<AdminLayout pageName="New SMM Panels" pageTitle="New SMM Panels" showOverlaw={showOverlay}>
+    <span class="p-5 flex items-center flex-col w-full">
+    <AdminPanelFields formType="publish"></AdminPanelFields>
+
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/SMMPanel"}
+            />
+        )
+    }
+    </span>
+    
+</AdminLayout>

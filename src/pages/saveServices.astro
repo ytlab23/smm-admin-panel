@@ -1,0 +1,197 @@
+---
+import { XataClient } from '../../src/xata.ts';
+const xata = new XataClient({ apiKey: import.meta.env.XATA_API_KEY, branch: import.meta.env.XATA_BRANCH });
+
+let isAutoFetchEnable = import.meta.env.autoFetchServicesCRON 
+
+var AllApiLinks: any[] = [];
+var AllServicesCollection :any[] = [];
+var AllPanelServices :any[] = [];
+let allPanelServicesFrm_database;
+let allPanelRes;
+
+if(isAutoFetchEnable === "true"){
+    //Fetching Already Saved Services from Our Database
+    const allPanelServicesFetch: any = await fetch(Astro.site + "api/panelServices.json");
+    allPanelServicesFrm_database = await allPanelServicesFetch.json();
+    
+    //#region Fetching All Services freshly (Will Fetch new Services from Panels API)
+    const allPanelsFetch: any = await fetch(Astro.site + "api/panels.json");
+    allPanelRes = await allPanelsFetch.json();
+    
+    allPanelRes.map((panel:any) =>(
+        AllApiLinks.push([`${panel.panelAPILink}?key=${panel.panelAPIKey}&action=services` ,panel.panelTitle, panel.panelSlug, panel.panelWebsiteURL ])
+    ))
+    
+    //Executing every API and Storing services in a Array
+    for (let i = 0; i < AllApiLinks.length; i++) {
+        let panelServicesdata = await fetch(AllApiLinks[i][0]).then((Response) =>
+            Response.json(),
+        );
+    
+        for (let j = 0; j < panelServicesdata.length; j++) {
+            panelServicesdata[j].panelName = AllApiLinks[i][1];
+            panelServicesdata[j].panelSlug = AllApiLinks[i][2];
+            panelServicesdata[j].panelRefUrl = AllApiLinks[i][3];
+        }
+        AllServicesCollection.push(panelServicesdata);
+    }
+    //#endregion
+    
+    //Editing attributes of every services 
+    for (let i = 0; i < AllServicesCollection.length; i++) { //Loop over Services per Panels
+        for (let j = 0; j < AllServicesCollection[i].length; j++) { //Loop over All Services Collectively
+            // if(AllServicesCollection[i][j].rate > 1000)
+            // console.log(AllServicesCollection[i][j]);
+            
+            AllServicesCollection[i][j].serviceNo = AllServicesCollection[i][j].service;
+            AllServicesCollection[i][j].serviceName = AllServicesCollection[i][j].name;
+            AllServicesCollection[i][j].serviceRate = AllServicesCollection[i][j].rate;
+            AllServicesCollection[i][j].serviceMin = AllServicesCollection[i][j].min;
+            AllServicesCollection[i][j].serviceMax = AllServicesCollection[i][j].max;
+            AllServicesCollection[i][j].serviceCategory = AllServicesCollection[i][j].category;
+    
+            delete AllServicesCollection[i][j].type;
+            delete AllServicesCollection[i][j].dripfeed;
+            delete AllServicesCollection[i][j].refill;
+            delete AllServicesCollection[i][j].cancel;
+            
+            delete AllServicesCollection[i][j].service;
+            delete AllServicesCollection[i][j].name;
+            delete AllServicesCollection[i][j].rate;
+            delete AllServicesCollection[i][j].min;
+            delete AllServicesCollection[i][j].max;
+            delete AllServicesCollection[i][j].category;
+    
+            AllPanelServices.push(AllServicesCollection[i][j]);
+        }
+    }
+    
+    //Editing attributes of Services from Database
+    for (let i = 0; i < allPanelServicesFrm_database.length; i++) {
+        delete allPanelServicesFrm_database[i].serviceUploadDate;
+        delete allPanelServicesFrm_database[i].xata;
+    }
+    /* console.log(allPanelServicesFrm_database[0]);
+    console.log(AllServices[0]); */
+}
+
+function getNewServices(PanelServices : any , DatabaseServices : any){
+
+    var newServicesData : any [] = [];
+    for (let i = 0; i < PanelServices.length; i++) {
+        var isPresent = false;
+        for (let j = 0; j < DatabaseServices.length; j++) {
+            if((DatabaseServices[j].serviceNo == PanelServices[i].serviceNo) && (DatabaseServices[j].serviceName == PanelServices[i].serviceName)){
+                isPresent = true;
+            }
+        }
+
+        if(!isPresent){
+            newServicesData.push(PanelServices[i]);
+        }
+    }
+
+    return newServicesData;
+}
+
+function getDeletedServices(PanelServices : any , DatabaseServices : any){
+
+    var deleteServicesData : any [] = [];
+    for (let i = 0; i < DatabaseServices.length; i++) {
+        var isPresent = false;
+        for (let j = 0; j < PanelServices.length; j++) {
+            if((DatabaseServices[i].serviceNo == PanelServices[j].serviceNo) && (DatabaseServices[i].serviceName == PanelServices[j].serviceName)){
+                isPresent = true;
+            }
+        }
+
+        if(!isPresent){
+            deleteServicesData.push(DatabaseServices[i]);
+        }
+    }
+
+    return deleteServicesData;
+}
+
+// console.log(AllPanelServices[0]);
+// console.log(allPanelServicesFrm_database[0]);
+let newServicesData : any[] = [];
+let deleteServicesData : any[] = [];
+
+if(isAutoFetchEnable === "true"){
+    newServicesData = getNewServices( AllPanelServices , allPanelServicesFrm_database);
+    
+    // Setting up date of creation
+    for (let i = 0; i < newServicesData.length; i++) {
+        newServicesData[i].serviceUploadDate = new Date();
+    }
+    
+    // console.log("New Services - ", newServicesData);
+    
+    deleteServicesData = getDeletedServices( AllPanelServices , allPanelServicesFrm_database)
+    var deleteServicesID : string[] = [];
+    for (let i = 0; i < deleteServicesData.length; i++) {
+        deleteServicesID.push(deleteServicesData[i].id);
+    }
+    console.log("Deleted Services Database ID-", deleteServicesID);
+    
+    // Inserting new Services
+    if(newServicesData.length > 0){
+        const record = await xata.db["panel-services"].create(newServicesData);
+        
+        if (record) {
+            console.log("Data Uploaded");
+        }
+        // console.log("Data Uploaded");
+    }
+    
+    // Delete Services from Databases
+    if(deleteServicesID.length > 0){
+        const recordDelete = await xata.db["panel-services"].delete(deleteServicesID);
+        
+        if (recordDelete) {
+            console.log("Data Deleted");
+        }
+        // console.log("Data Deleted");
+    }
+    
+    //console.log(AllServices.length);
+    //console.log(AllServices[0]);
+    console.log("CRON Job for Save Services Initiated");
+}
+
+---
+
+<div class="messageContainer relative w-full h-screen flex justify-center items-center bg-[url('/assets/images/bg.webp')] bg-no-repeat bg-center bg-cover">
+    <div class="overlay absolute z-[1] size-full backdrop-blur-sm bg-[#00000078]"></div>
+    <div class="wrapper z-[2] w-full flex justify-center items-center">
+        <div class="container1280px w-[1280px] flex gap-5 flex-col justify-center items-center text-white">
+            <h1 class="text-center font-bold text-xl">Save Panels' Services</h1>
+            
+            {
+                isAutoFetchEnable === "true" ?
+                <div class="data-container-table flex gap-3 flex-col w-2/3 text-black font-semibold">
+                    <div class="data-col w-full p-2 px-3 rounded-sm flex justify-between items-center bg-white">
+                        <span>Total Panels</span>
+                        <span>{allPanelRes.length}</span>
+                    </div>
+                    <div class="data-col w-full p-2 px-3 rounded-sm flex justify-between items-center bg-white">
+                        <span>Previously Saved Services</span>
+                        <span>{allPanelServicesFrm_database.length}</span>
+                    </div>
+                    <div class="data-col w-full p-2 px-3 rounded-sm flex justify-between items-center bg-white">
+                        <span>New Services Found</span>
+                        <span>{newServicesData.length}</span>
+                    </div>
+                    <div class="data-col w-full p-2 px-3 rounded-sm flex justify-between items-center bg-white">
+                        <span>Services Deleted</span>
+                        <span>{deleteServicesData.length}</span>
+                    </div>
+                </div>
+                :
+                <span class="font-semibold text-xl">[Not Enabled]</span>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+---
+import RowData from "./components[admin]/rowData.astro";
+import AdminLayout from "./layouts/adminLayout.astro";
+import { formatDate, isAdminLoggedIn } from "./js/utils.ts";
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/signin");
+}
+let toastMessage;
+
+interface panelStructure {
+    id: string;
+    panelAPILink: string;
+    panelTitle: string;
+    panelWebsiteURL: string;
+    panelSlug: string;
+    xata: {
+        createdAt: string;
+    };
+}
+
+const allSMMPanels = await fetch(Astro.site + "api/panels.json");
+const panelAPIResponse: panelStructure[] = await allSMMPanels.json();
+Astro.cookies.delete("updatePanelID");
+
+---
+
+<AdminLayout pageName="SMM Panels" pageTitle="SMM Panels">
+    <div class="table-data-container w-full p-5">
+        {
+            panelAPIResponse.length == 0 ?
+            <div class="message size-full flex justify-center items-center">
+                <h2 class="text-3xl text-center font-semibold">No Panel added till now</h2>
+                <a href="/SMMPanelNew" class="p-3 rounded-md bg-[#5344f5] text-white" ><i class="px-3 fa-solid fa-file-plus-minus"></i> Add New Page</a>
+            </div>
+            :
+            <div
+                class="table-header flex w-full py-4 bg-[#6e7bd9] text-white font-bold rounded-tr-lg rounded-tl-lg"
+            >
+                <div class="field px-3 w-[6%]">No.</div>
+                <div class="field px-3 lg:w-[25%] w-[37.5%]">Title</div>
+                <div class="field px-3 lg:w-[24%] w-[36.5%]">Publish Date</div>
+                <div class="field px-3 w-[25%] hidden lg:block">API URL</div>
+                <div class="field px-3 w-[15%]">Action</div>
+            </div>
+            <div class="table-data w-full rounded-br-lg rounded-bl-lg">
+                {
+                    panelAPIResponse
+                        .reverse()
+                        .map((panel, index) => (
+                            <RowData
+                                API_URL={panel.panelAPILink}
+                                Action={panel.id}
+                                No={index + 1}
+                                Publish_Date={formatDate(panel.xata.createdAt)}
+                                Title={panel.panelTitle}
+                            />
+                        ))
+                }
+            </div>
+        }
+
+    </div>
+
+    {
+        toastMessage && (
+            <span class="toast hidden" id="toast" data-message={toastMessage} />
+        )
+    }
+</AdminLayout>
+
+<script is:inline>
+
+    console.log(document.body.dataset.apiSite + "api/panels/");
+    //#region Edit Button Function
+    var allEditBtns = document.querySelectorAll(".actionBtns .EditBtn");
+    allEditBtns.forEach((editBtn) => {
+        editBtn.addEventListener("click", ()=>{
+            document.cookie = `updatePanelID=${editBtn.getAttribute("data-id").toString()}; path=/`;
+            window.location.href = "/SMMPanelUpdate"
+        })
+    });
+    //#endregion
+
+    //#region Delete Button Function
+    var allDeleteBtns = document.querySelectorAll(".actionBtns .DeleteBtn");
+    allDeleteBtns.forEach((deleteBtn) => {
+        deleteBtn.addEventListener("click", async () => {
+            
+            var resp = window.confirm(`Are you sure you want to delete ${deleteBtn.parentElement.parentElement.parentElement.children[1].textContent} SMM Panel?`);
+            if(resp == true){
+                await fetch(
+                    document.body.dataset.apiSite + "api/panels/" + deleteBtn.getAttribute("data-id").toString(),
+                    {
+                        method: "DELETE",
+                    },
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        var message = "";
+                        if (data.status != 200) {
+                            message =
+                                "Panel NOT Deleted. An problem occured while deleting";
+                        } else {
+                            message = "Panel Deleted";
+                            deleteBtn.parentElement.parentElement.parentElement.remove();
+                        }
+    
+                        Toastify({
+                            text: message,
+                            duration: 3000,
+                            close: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background:
+                                    "linear-gradient(to right, #5344f5, #3dbbc9)",
+                            },
+                            onClick: function () {}, // Callback after click
+                        }).showToast();
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1200);
+                    });
+            }
+        });
+    });
+    //#endregion
+
+    //#region Toast Notifications
+    try {
+        Toastify({
+            text: document.querySelector("#toast").getAttribute("data-message"),
+            duration: 3000,
+            close: true,
+            gravity: "bottom", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "linear-gradient(to right, #5344f5, #3dbbc9)",
+            },
+            onClick: function () {}, // Callback after click
+        }).showToast();
+    } catch (error) {
+        console.log(error);
+    }
+    //#endregion
+</script>

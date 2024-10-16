@@ -1,0 +1,243 @@
+---
+import TextArea from "./components[admin]/TextArea.astro";
+import TextInput from "./components[admin]/TextInput.astro";
+import MessageMeta from "./components[admin]/messageMeta.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+const adminCookie = Astro.cookies.get("admin");
+
+const AllMessages = await fetch(Astro.site + "api/messages.json").then(
+    (Response) => Response.json(),
+);
+
+if (!isAdminLoggedIn(adminCookie)) {
+    return Astro.redirect("/admin/signin/");
+}
+---
+
+<AdminLayout pageTitle="Messages" pageName="Messages">
+    <span class="p-5 flex items-center flex-col size-full">
+        <div class="messageContainer flex gap-2 size-full">
+            <div
+                class="messageOverviewContainer w-[30%] overflow-auto max-h-full h-fit flex flex-col gap-1 rounded-lg shadow-gray-400 shadow-sm"
+            >
+                <h2
+                    class="p-3 font-semibold text-xl rounded-lg sticky top-0 bg-[#efeef3]"
+                >
+                    Messages
+                </h2>
+
+                {
+                    AllMessages.length > 0 ? (
+                        AllMessages.map((msg: any) => (
+                            <MessageMeta
+                                id={msg.id}
+                                msgStatus={msg.status}
+                                senderName={msg.username}
+                                metaContent={msg.message
+                                    .toString()
+                                    .substring(0, 40)}
+                            />
+                        ))
+                    ) : (
+                        <p class="text-center w-full">No messages</p>
+                    )
+                }
+            </div>
+            {
+                AllMessages.length > 0 &&
+                <div class="messageContentContainer w-[70%] flex flex-col gap-1 rounded-lg shadow-gray-400 shadow-sm">
+                    <div class="noContent flex size-full justify-center items-center">
+                        <p>Click on chats in left sidebar to read messages</p>
+                    </div>
+                    <div class="content hidden">
+                        <div class="messageTools flex gap-2 p-2">
+                            <button
+                                id="updateAsUnreadBtn"
+                                type="button"
+                                class="size-fit w-auto my-1 px-3 py-1 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                            >
+                                <i class="fa-light fa-book"></i> Mark as Unread
+                            </button>
+                            <button
+                                id="updateAsDeleteBtn"
+                                type="button"
+                                class="size-fit w-auto my-1 px-3 py-1 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                            >
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </div>
+    
+                        <div class="messagePlaceholder p-2 flex flex-col gap-2">
+                            <TextInput
+                                isRequired={false}
+                                placeholder=""
+                                textBoxId="senderName"
+                                textLabelText=""
+                            />
+                            <TextInput
+                                isRequired={false}
+                                placeholder=""
+                                textBoxId="senderEmail"
+                                textLabelText=""
+                            />
+                            <TextArea
+                                fullHeight={"min-h-[340px]"}
+                                isRequired={false}
+                                placeholder=""
+                                textBoxId="senderMsgContent"
+                                textLabelText=""
+                            />
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+    </span>
+</AdminLayout>
+
+<script is:inline>
+    var senderNameField = document.getElementById("senderName");
+    var senderEmailField = document.getElementById("senderEmail");
+    var senderMsgContentField = document.getElementById("senderMsgContent");
+    var noContentMsg = document.querySelector(".noContent");
+    var messagePlaceholder = document.querySelector(".content");
+
+    senderNameField.disabled = true;
+    senderEmailField.disabled = true;
+    senderMsgContentField.disabled = true;
+
+    const allMessageBtn = document.querySelectorAll(".messageBox");
+    allMessageBtn.forEach((msgBtn) => {
+        msgBtn.addEventListener("click", async () => {
+            noContentMsg.classList.remove("flex");
+            noContentMsg.classList.add("hidden");
+
+            messagePlaceholder.classList.remove("hidden");
+
+            await fetch(
+                document.body.dataset.apiSite + "api/messages/" + msgBtn.getAttribute("data-id").toString(),
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    senderNameField.value = data.data.username;
+                    senderEmailField.value = data.data.email;
+                    senderMsgContentField.value = data.data.message;
+
+                    document
+                        .getElementById("updateAsUnreadBtn")
+                        .setAttribute(
+                            "data-id",
+                            msgBtn.getAttribute("data-id"),
+                        );
+                    document
+                        .getElementById("updateAsDeleteBtn")
+                        .setAttribute(
+                            "data-id",
+                            msgBtn.getAttribute("data-id"),
+                        );
+
+                    setTimeout(function () {
+                        try {
+                            msgBtn.children[0].children[0].classList.add("hidden");
+                            setAsRead(msgBtn.getAttribute("data-id"));
+                        } catch (error) {}
+                    }, 1200);
+                });
+        });
+    });
+
+    const UnreadBtn = document.getElementById("updateAsUnreadBtn");
+    const DeleteBtn = document.getElementById("updateAsDeleteBtn");
+
+    async function setAsRead(id) {
+        await fetch(
+            document.body.dataset.apiSite + "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
+            {
+                method: "PUT",
+            },
+        )
+            .then((response) => response.json())
+            .then((data) => { 
+                console.log("Marked as Read");
+            });
+    }
+    UnreadBtn.addEventListener("click", async () => {
+        await fetch(
+            document.body.dataset.apiSite + "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
+            {
+                // Append data to the form data object
+                method: "PATCH",
+            },
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.message == "Data Updated Successfully") {
+
+                    Toastify({
+                        text: "Message mark as Unread",
+                        duration: 3000,
+                        close: true,
+                        gravity: "bottom", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background:
+                                "linear-gradient(to right, #5344f5, #3dbbc9)",
+                        },
+                        onClick: function () {}, // Callback after click
+                    }).showToast();
+                    setTimeout(function () {
+                        allMessageBtn.forEach(msgBtn => {
+                            if(msgBtn.getAttribute("data-id") === UnreadBtn.getAttribute("data-id").toString()){
+                                msgBtn.children[0].children[0].classList.remove("hidden");
+                            }
+                        });
+                    }, 1200);
+                }
+            });
+    });
+    DeleteBtn.addEventListener("click", async () => {
+        await fetch(
+            document.body.dataset.apiSite + "api/messages/" + DeleteBtn.getAttribute("data-id").toString(),
+            {
+                method: "DELETE",
+            },
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                senderNameField.value = "";
+                senderEmailField.value = "";
+                senderMsgContentField.value = "";
+
+                document
+                    .getElementById("updateAsUnreadBtn")
+                    .setAttribute("data-id", "");
+                document
+                    .getElementById("updateAsDeleteBtn")
+                    .setAttribute("data-id", "");
+                
+                noContentMsg.classList.remove("hidden");
+                noContentMsg.classList.add("flex");
+                messagePlaceholder.classList.add("hidden");
+
+                Toastify({
+                        text: "Message Deleted",
+                        duration: 3000,
+                        close: true,
+                        gravity: "bottom", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background:
+                                "linear-gradient(to right, #5344f5, #3dbbc9)",
+                        },
+                        onClick: function () {}, // Callback after click
+                    }).showToast();
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1200);
+            });
+    });
+</script>

@@ -1,0 +1,17 @@
+<div class="Overlay confirmBox hidden top-0 z-20 absolute flex items-center justify-center size-full bg-[#525252a5] p-6">
+    <div class="confirmBox p-4 bg-white rounded-lg relative shadow-2xl">
+        <span class="bg-white absolute -right-2 -top-2 flex items-center justify-center rounded-full size-4">
+            <i onclick="getResponse('closed')" class="closeBtn serviceForm cursor-pointer text-xl text-red-600 rounded-full fa-solid fa-circle-xmark "></i>
+        </span>
+
+        <span class="ConfirmMessage my-4 block"><i class="text-2xl fa-solid fa-triangle-exclamation"></i> <span class="msg">Lorem ipsum dolor sit amet</span></span>
+        <span class="actionBtnContainer flex gap-2 justify-center">
+            <button onclick="setConfirmationBoxResponse('Yes')" id="confirmYesBtn" type="button" class="size-fit w-auto px-5 py-1 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                Yes
+            </button>
+            <button onclick="setConfirmationBoxResponse('No')" id="confirmNoBtn" type="button" class="size-fit w-auto px-5 py-1 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                No
+            </button>
+        </span>
+    </div>
+</div>

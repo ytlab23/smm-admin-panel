@@ -1,0 +1,79 @@
+---
+
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+import AdminPanelFields from "./components[admin]/adminPanelFields.astro";
+const adminCookie = Astro.cookies.get("admin");
+
+const SiteData = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/signin");
+}
+var messageToShow = "", showOverlaw = false;
+
+const panelID = Astro.cookies.get("updatePanelID");
+// console.log("Panel ID to Update - ", panelID?.value);
+
+if(!isAdminLoggedIn(panelID)){
+    return Astro.redirect("/SMMPanel");
+}
+
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+        
+        showOverlaw = true;
+        const response = await fetch(Astro.site + "api/panels/" + panelID?.value, {
+            method: "PUT",
+            body: data,
+        });
+
+        const APIResponse = await response.json();
+        if (APIResponse.message == "Data Updated Successfully") {
+            if(SiteData[0].siteDeployHook){
+                const deploymentHook1 = await fetch(SiteData[0].siteDeployHook, {
+                    method: "POST"
+                });
+                console.log(`Deployment trigger at ${SiteData[0].siteDeployHook}`);
+                console.log(`Webhook For Site - smmsearch.io`);
+                console.log(`Status`, deploymentHook1);
+            }
+
+            messageToShow = "SMM Panel is Updated. Click here to see all Saved SMM Panels";            
+        }
+        
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+    showOverlaw = false;
+}
+
+const fetchPanelInfo = await fetch(Astro.site + "api/panels/"+panelID?.value);
+const panelInfo = await fetchPanelInfo.json();
+
+---
+
+<AdminLayout pageName="Update Panel" pageTitle="Update Panel" showOverlaw={showOverlaw}>
+    <span class="p-5 flex items-center flex-col w-full">
+
+        {
+            messageToShow && (
+                <span
+                    class="toast hidden"
+                    id="toast"
+                    data-message={messageToShow}
+                    data-destination={"/SMMPanel"}
+                />
+            )
+        }
+        
+        <AdminPanelFields panelInfo={panelInfo} formType="update"></AdminPanelFields>
+
+    </span>
+</AdminLayout>

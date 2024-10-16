@@ -1,0 +1,28 @@
+---
+interface Props {
+    No : number,
+    Title : string,
+    Publish_Date : string,
+    API_URL : string,
+    Action : string,
+}
+const {No, Title, Publish_Date, API_URL, Action } = Astro.props;
+---
+
+<div class="row flex py-2"
+    class:list={[
+        {"bg-[#f0f8ff]" : No % 2 == 1},
+        {"bg-white" : No % 2 == 0}
+    ]}
+>
+    <div title={No.toString()} class="field px-3 w-[6%] line-clamp-1">{No.toString()}</div>
+    <div title={Title} class="field px-3 lg:w-[25%] w-[37.5%] line-clamp-1">{Title}</div>
+    <div title={Publish_Date} class="field px-3 lg:w-[24%] w-[36.5%] line-clamp-1">{Publish_Date}</div>
+    <div title={API_URL} class="field px-3 w-[25%] line-clamp-1 hidden lg:block">{API_URL}</div>
+    <div title={Action} class="field px-3 w-[15%] line-clamp-1">
+        <div class="actionBtns flex gap-3">
+            <a data-id={Action} class="EditBtn px-2 rounded-md hover:font-semibold text-green-600 bg-green-100 cursor-pointer">Edit</a>
+            <a data-id={Action} class="DeleteBtn px-2 rounded-md hover:font-semibold text-red-600 bg-red-300 cursor-pointer">Delete</a>
+        </div>
+    </div>
+</div>

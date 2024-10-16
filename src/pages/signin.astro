@@ -1,0 +1,93 @@
+---
+export const prerender = false;
+import AdminAuthLayout from "./layouts/adminAuthLayout.astro";
+var form_message = "";
+var isFormSubmitted = false;
+if (Astro.request.method === "POST") {
+   try {
+      
+      const data = await Astro.request.formData();
+      isFormSubmitted = true;
+      // console.log(data);
+
+      const response = await fetch(Astro.site + "api/adminLogin.json", {
+         method: "POST",
+         body: data,
+      });
+
+      const APIResponse = await response.json();
+      
+      // console.log("Sign In Response - ", APIResponse);
+      
+      if (APIResponse.status == 200){
+         Astro.cookies.set("admin", APIResponse.userID , {path : "/" });
+         return Astro.redirect("/");
+      }
+      else if(APIResponse.status == 400){
+         form_message = APIResponse.message
+         console.log(APIResponse);
+         isFormSubmitted = false;
+      }
+      else if(APIResponse.status == 304){
+         form_message = "Wrong Username or Password. Check your typos and try again."
+         isFormSubmitted = false;
+      }
+   } catch (error) {
+      if (error instanceof Error) {
+         console.error(error.message);
+      }
+      isFormSubmitted = false;
+   }
+}
+
+---
+
+<AdminAuthLayout title="Sign in">
+   <h2 class="text-2xl font-bold">Welcome!! ✨</h2>
+   <h3 class="text-gray-400">Login to continue</h3>
+   {
+      form_message != "" &&
+      <span id="FormMessage" class="text-red-600 flex items-center w-full gap-2">
+         <i class="text-xl fa-duotone fa-circle-exclamation"></i>
+         <span>{form_message}</span>
+      </span>
+   }
+   <form method="post" class="flex flex-col gap-y-5 h-1/2 w-full">
+      <span class="relative w-full flex items-center">
+         <i class="absolute left-5 fa-solid fa-user"></i>
+         <input onkeyup="return forceLower(this);"
+            required
+            class="w-full border-2 border-blue-600 px-3 pl-10 py-2"
+            type="text"
+            name="username"
+            id="username"
+            placeholder="Enter your username"
+         />
+      </span>
+      <span class="relative w-full flex items-center">
+         <i class="absolute left-5 fa-solid fa-lock"></i>
+         <input
+            required
+            class="w-full border-2 border-blue-600 px-3 pl-10 py-2"
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+         />
+      </span>
+      
+      <!-- Captcha -->
+      <div class="my-3 g-recaptcha" data-sitekey={import.meta.env.CapchaSiteKey}></div>
+      
+      <span class="flex items-center lg:gap-7 gap-5">
+         <button
+            id="loginBtn" type="submit"
+            class="rounded-full px-10 py-2 bg-blue-600 text-white w-fit cursor-pointer shadow-lg hover:bg-blue-800 hover:shadow-xl"
+            >Login</button
+         >
+         <a href="/forgotPassword" class="font-semibold text-blue-800">Forgot Password?</a>
+      </span>
+   </form>
+</AdminAuthLayout>
+<script is:inline src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script is:inline src="/assets/scripts/main.js"></script>

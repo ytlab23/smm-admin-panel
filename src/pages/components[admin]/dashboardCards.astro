@@ -1,0 +1,38 @@
+---
+interface Props {
+    counts : number,
+    cardTitle : string,
+    redirectPath : string,
+    cardColor : string
+    iconClass : string
+}
+
+const {counts, cardTitle, redirectPath, cardColor, iconClass} = Astro.props;
+---
+
+<div class="cards flex gap-3 justify-between items-center lg:w-[32%] w-full border border-[#4d4d4d86] rounded-md p-4 transition-all ease-in-out duration-150 hover:shadow-lg hover:scale-105">
+    <span class="flex gap-3">
+        <span class="size-12 flex justify-center items-center rounded-full text-xl "
+        class:list={
+            `bg-${cardColor}-200`
+        }
+        >
+        <i
+        class:list={
+            [`text-${cardColor}-700`,
+            iconClass
+            ]
+        }
+        ></i>
+    </span>
+    <span>
+        <p>{cardTitle}</p>
+        <p class="text-xl font-bold">{counts}</p>
+    </span>
+    </span>
+    <span>
+        <a href={redirectPath}>
+            <i class="rounded-full size-8 bg-gray-400 hover:bg-gray-500 flex justify-center items-center text-white fa-sharp fa-solid fa-arrow-right-to-arc"></i>
+        </a>
+    </span>
+</div>

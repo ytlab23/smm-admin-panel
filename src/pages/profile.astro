@@ -1,0 +1,252 @@
+---
+import TextInput from "./components[admin]/TextInput.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/admin/signin/");
+}
+
+//#region fetching User's information
+let APIResponse;
+try {
+    const adminDetails = await fetch(
+        Astro.site + "api/users/" + adminCookie?.value,
+    );
+    // console.log("cookie found- ",adminCookie?.value);
+
+    APIResponse = await adminDetails.json();
+    
+} catch (error) {
+    console.log("Error Found in AdminLayout- ", error);
+}
+//#endregion
+
+//#region submitting Updated users Information
+let showOverlay, messageToShow = "";
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+        if(data.get("updateUsersDetails") == "true"){
+            const response = await fetch(Astro.site + `api/users/${adminCookie?.value}`, {
+                method: "PUT",
+                body: data,
+            });
+    
+            const APIResponse = await response.json();
+            if (APIResponse.message == "User Data Updated Successfully") {
+                messageToShow = "Your Data is Saved";
+            }
+        }
+        else
+        {
+            const response = await fetch(Astro.site + `api/users/${adminCookie?.value}`, {
+                method: "PUT",
+                body: data,
+            });
+    
+            const APIResponse = await response.json();
+            if (APIResponse.message == "User Data Updated Successfully") {
+                messageToShow = "New Password Updated";
+            }
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+//#endregion
+---
+
+<AdminLayout pageName="My Profile" pageTitle="My Profile">
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/profile"}
+                data-refresh = {"/profile"}
+            />
+        )
+    }
+    <div class="wrapper w-full p-5">
+        <div class="profileContainer p-6 my-5 flex justify-center items-center gap-4 border-gray-500 border-2 border-dashed rounded-md">
+            
+            <span class="flex gap-4">
+                <img src={
+                    APIResponse.data.ProfilePic == null ? "/assets/images/usericon.png"
+                    : APIResponse.data.ProfilePic.url
+                    } 
+                
+                alt="profile Image" class="rounded-full size-28 border-2 border-blue-500 cursor-pointer">
+                <span>
+                    <p class="lg:text-5xl text-2xl font-semibold">{APIResponse.data.fullName}</p>
+                    <p class="italic text-xl">{APIResponse.data.username}</p>
+                </span>
+            </span>
+    
+        </div>
+
+        <span class="flex items-center gap-2 mb-4 ">
+            <h2 class="py-1 text-xl font-bold">My Details</h2>
+            <button type="button" id="detailsEditBtn" class="EditBtn px-2 py-1 rounded-md hover:font-semibold text-green-600 bg-green-100"><i class="fa-solid fa-pencil"></i> Edit</button>
+
+        </span>
+        <div class="detailsContainer w-full flex lg:flow-row flex-col lg:gap-7">
+            <ul class="lg:w-1/2 w-full">
+                <li class="flex gap-4 p-3 bg-white rounded-lg mb-2"><span class="w-1/2">Name</span> <span class="w-1/2">{APIResponse.data.fullName}</span></li>
+                <li class="flex gap-4 p-3 bg-white rounded-lg mb-2"><span class="w-1/2">Username</span> <span class="w-1/2">{APIResponse.data.username}</span></li>
+            </ul>
+            <ul class="lg:w-1/2 w-full">
+                <li class="flex gap-4 p-3 bg-white rounded-lg mb-2"><span class="w-1/2">Email</span> <span class="w-1/2">{APIResponse.data.email || "No Email"}</span></li>
+                <li class="flex gap-4 p-3 bg-white rounded-lg mb-2"><span class="w-1/2">Role</span> <span class="w-1/2 capitalize">{APIResponse.data.role}</span></li>
+            </ul>
+
+        </div>
+        
+        <div class="updateDetailsContainer hidden">
+            <span class="divider border-t-2 border-dashed border-gray-600 my-5 block"></span>
+            <h2 class="mb-4 text-xl font-bold">Update Details</h2>
+            <div class="EmailAddFields flex gap-7">
+                <form method="post" class="w-full">
+                    <div class="wrapper flex lg:flex-row flex-col gap-4">
+                        <span
+                            class="flex flex-col justify-center items-center p-2 gap-4 border-2 border-gray-400 border-dashed rounded-md">
+                                <label class="w-full text-left">Upload Profile Picture</label>
+    
+                                <img
+                                    id="uploadedImage"
+                                    src={
+                                        APIResponse.data.ProfilePic == null ? "/assets/images/usericon.png"
+                                        : APIResponse.data.ProfilePic.url
+                                        } 
+                                    class="size-20 cursor-pointer"
+                                    onclick="document.getElementById(`proPicFile`).click();"
+                                />
+                                <input
+                                    type="file"
+                                    name="proPicFile"
+                                    id="proPicFile"
+                                    class="text-xs w-fit"
+                                    accept="image/png, image/webp, image/avif"
+                                />
+                            </span>
+                        <div class="col lg:w-1/2 w-full">
+                            <TextInput textValue={APIResponse.data.fullName} isRequired={true} placeholder="New Name" textBoxId="newName" textLabelText="New Name"></TextInput>
+                            <TextInput textValue={APIResponse.data.username} isRequired={true} placeholder="New Username" textBoxId="newUsername" textLabelText="New Username" isLowerCaseText={true}></TextInput>
+                        </div>
+                        <div class="col lg:w-1/2 w-full">
+                            <TextInput textValue={APIResponse.data.email || ""} inputType="email" isRequired={true} placeholder="New Email Address" textBoxId="NewEmailAddress" textLabelText="New Email Address"></TextInput>
+                        </div>
+                    </div>
+    
+                    <input type="hidden" name="imageName" id="imageName" />
+                    <input type="hidden" name="imageBase64" id="imageBase64" />
+                    <input type="hidden" name="imageFileType" id="imageFileType" />
+                    <input type="hidden" name="updateUsersDetails" id="updateUsersDetails" value="true"/>
+    
+                    <button id="updateDetailsBtn"
+                    type="submit"
+                    class="size-fit w-auto my-2 px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                        Update
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <span class="divider border-t-2 border-dashed border-gray-600 my-5 block"></span>
+        
+        <h2 class="mb-4 text-xl font-bold">Change Passwords</h2>
+        <div class="changePassFields flex gap-7 flex-col-reverse lg:flex-row">
+            <form method="post" class="lg:w-[55%]" onsubmit="return validatePassword()">
+
+                <TextInput inputType="password" isRequired={true} placeholder="Current Password" textBoxId="oldPass" textLabelText="Current Password"></TextInput>
+                <TextInput inputType="password" isRequired={true} placeholder="New Password" textBoxId="newPass" textLabelText="New Password"></TextInput>
+                <TextInput inputType="password" isRequired={true} placeholder="Confirm Password" textBoxId="confirmPass" textLabelText="Confirm Password"></TextInput>
+                <input type="hidden" name="updateUsersDetails" id="updateUsersDetails" value="false"/>
+                <button id="passwordChangeBtn"
+                type="submit" data-curntPs={APIResponse.data.password}
+                class="size-fit w-auto my-2 px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                    Change
+                </button>
+            </form>
+
+            <div class="notes lg:w-[45%] w-full">
+                <ol class="list-decimal text-sm flex flex-col gap-5">
+                    <li>
+                        (Mandatory) Please make a Password using more than 6 characters
+                    </li>
+                    <li>
+                        (Not Mandatory) Use special characters for making Password more secure.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    <script is:inline src="/assets/scripts/main.js"></script>
+    
+</AdminLayout>
+
+<script is:inline>
+    //#region Details Edit 
+    const detailsEditBtn = document.querySelector("#detailsEditBtn");
+    const detailsFields = document.querySelector(".updateDetailsContainer");
+    detailsEditBtn.addEventListener("click", ()=>{
+        detailsFields.classList.remove("hidden");
+        bringToView(".updateDetailsContainer");
+    })
+    //#endregion
+
+    //#region profile Picture
+    document
+        .getElementById("proPicFile")
+        .addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                // console.log(file);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = function () {
+                    const imageDataURL = reader.result;
+                    // const imgbody = new Blob([imageDataURL] , {type : file.type})
+
+                    document.getElementById("imageName").value = file.name;
+                    document.getElementById("uploadedImage").src = imageDataURL;
+                    document.getElementById("imageBase64").value =
+                        imageDataURL.split("base64,")[1];
+                    document.getElementById("imageFileType").value = file.type;
+
+                    // console.log(imgbody);
+                };
+            }
+        });
+    //#endregion
+
+    //#region Validate Password
+    function validatePassword(){
+        let oldPass = document.getElementById("oldPass").value;
+        let passChngBtn = document.getElementById("passwordChangeBtn");
+        let newPassVal = document.getElementById("newPass").value;
+        let confirmPassVal = document.getElementById("confirmPass").value;
+
+        if(passChngBtn.getAttribute("data-curntPs") === oldPass){
+            if(newPassVal === confirmPassVal)
+                return true
+            else
+            {
+                window.alert("Your New Password and Confirming Password are not Same");
+                return false;
+            }
+        }
+        window.alert("Old password doesn't match the password you entered");
+        return false;
+    }
+    //#endregion 
+</script>

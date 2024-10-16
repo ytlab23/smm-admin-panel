@@ -1,0 +1,40 @@
+---
+interface Props {
+    title:string
+}
+
+const {title} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{title} - SMM Panel Reviews</title>
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.2/css/all.css">
+    <link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.5.2/css/sharp-solid.css">
+    <link rel="shortcut icon" href="/assets/images/adminFav.png" type="image/x-icon">
+</head>
+<body>
+    
+    <div class="sign-up-container w-full lg:h-screen lg:flex">
+        
+        <div class="image-container lg:w-1/2 h-full flex flex-col justify-center gap-y-5 p-5 bg-gradient-to-br from-blue-100 to-pink-200">
+            <a href="/">
+                <h1 class="font-bold text-3xl text-blue-600">SMM Panel (smmsearch.io)</h1>
+            </a>
+            <span class="flex justify-center w-full">
+                <img src="/assets/images/login.png" alt="login Image" class="lg:size-full size-1/2 object-cover">
+            </span>
+        </div>
+
+        <div class="signup-form lg:w-1/2 h-full flex flex-col justify-center gap-y-5 p-7">
+            
+            <slot />
+            
+        </div>
+    </div>
+
+</body>
+</html>

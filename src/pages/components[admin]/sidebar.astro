@@ -1,0 +1,132 @@
+---
+interface Props {
+    isSuperUser : boolean
+}
+
+const {isSuperUser = false} = Astro.props;
+---
+
+<div
+    class="side-menubar-container absolute left-0 h-screen lg:block lg:w-[20%] w-full bg-[#5344f5] z-10"
+>
+    <div class="menuholder h-full flex flex-col">
+        <div class="logo py-4 mb-4 flex px-5 lg:px-0 justify-between lg:justify-center items-center" >
+            <span class="text-white text-4xl text-center">SMM Panel Admin</span>
+           
+            <i
+                id="menuCloseToggleBtn"
+                class="text-white lg:hidden text-lg cursor-pointer fa-solid fa-x"
+            ></i>
+        </div>
+
+        <div class="menuList overflow-y-auto min-h-[65vh]">
+            <ul class="text-white">
+                <li class="hover:bg-[#261d8b] cursor-pointer">
+                    <a
+                        href="/"
+                        class="px-3 py-2 size-full flex justify-between items-center"
+                    >
+                        <span
+                            ><i class="px-3 fa-solid fa-gauge"></i>Dashboard</span
+                        >
+                    </a>
+                </li>
+                <li class="hover:bg-[#261d8b] cursor-pointer">
+                    <a
+                        class="px-3 py-2 size-full flex justify-between items-center"
+                    >
+                        <span><i class="px-3 fa-light fa-solar-panel"></i>SMM Panels</span
+                        >
+                        <i
+                            class="fa-solid fa-caret-down ease-in-out duration-300"
+                        ></i>
+                    </a>
+                </li>
+                <ul class="innerMenuList h-0 invisible">
+                    <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                        <a href="/SMMPanelNew" class="size-full block"
+                            ><i class="px-3 fa-solid fa-file-plus-minus"></i>Add
+                            SMM Panels</a>
+                    </li>
+                    <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                        <a href="/SMMPanel" class="size-full block"
+                            ><i class="px-3 fa-solid fa-icons"></i>Manage</a>
+                    </li>
+                </ul>
+
+                <li class="hover:bg-[#261d8b] cursor-pointer">
+                    <a
+                        class="px-3 py-2 size-full flex justify-between items-center"
+                    >
+                        <span
+                            ><i class="px-3 fa-solid fa-page"></i></i>Pages</span
+                        >
+                        <i
+                            class="fa-solid fa-caret-down ease-in-out duration-300"
+                        ></i>
+                    </a>
+                </li>
+                <ul class="innerMenuList h-0 invisible">
+                    <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                        <a href="/pagesNew" class="size-full block"
+                            ><i class="px-3 fa-solid fa-file-plus-minus"></i>Add New Page</a>
+                    </li>
+                    <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                        <a href="/pages" class="size-full block"
+                            ><i class="px-3 fa-solid fa-icons"></i>Manage Pages</a>
+                    </li>
+                </ul>
+
+                <li class="hover:bg-[#261d8b] cursor-pointer">
+                    <a
+                        href="/services"
+                        class="px-3 py-2 size-full flex justify-between items-center">
+                        <span
+                            ><i class="px-3 fa-light fa-computer-classic"></i>Services</span
+                        >
+                    </a>
+                </li>
+                {
+                    isSuperUser && 
+                    <li class="hover:bg-[#261d8b] cursor-pointer">
+                        <a
+                            href="/users"
+                            class="px-3 py-2 size-full flex justify-between items-center">
+                            <span
+                                ><i class="px-3 fa-solid fa-users"></i>Manage Users</span>
+                        </a>
+                    </li>
+
+                    <li class="hover:bg-[#261d8b] cursor-pointer">
+                        <a
+                            href="/messages"
+                            class="px-3 py-2 size-full flex justify-between items-center">
+                            <span>
+                                <i class="px-3 fa-sharp fa-solid fa-messages"></i>
+                                Messages</span>
+                        </a>
+                    </li>
+
+                    <li class="hover:bg-[#261d8b] cursor-pointer">
+                        <a class="px-3 py-2 size-full flex justify-between items-center">
+                            <span><i class="px-3 fa-duotone fa-solid fa-gear"></i>Settings</span>
+                            <i class="fa-solid fa-caret-down ease-in-out duration-300"></i>
+                        </a>
+                    </li>
+                    <ul class="innerMenuList h-0 invisible">
+                        <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                            <a href="/site1-settings" class="size-full block">
+                                <i class="px-3 fa-duotone fa-solid fa-globe-pointer"></i>Site 1 (smmsearch.io)
+                            </a>
+                        </li>
+                        <li class="pl-6 hover:bg-[#261d8b] py-2 cursor-pointer">
+                            <a href="/Sidebar-Ads" class="size-full block">
+                                <i class="px-3 fa-regular fa-table-cells-large"></i>Sidebar Ads Placing
+                            </a>
+                        </li>
+                    </ul>
+                }
+            </ul>
+        </div>
+    </div>
+</div>

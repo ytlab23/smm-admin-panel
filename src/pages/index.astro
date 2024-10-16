@@ -1,0 +1,75 @@
+---
+import AdminLayout from "./layouts/adminLayout.astro";
+
+import {isAdminLoggedIn} from "./js/utils";
+import DashboardGreeting from "./components[admin]/DashboardGreeting.astro";
+import DashboardCards from "./components[admin]/dashboardCards.astro";
+
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/signin");
+}
+
+let APIResponse;
+try {
+    const adminDetails = await fetch(
+        Astro.site + "api/adminLogin/" + adminCookie?.value,
+    );
+
+    APIResponse = await adminDetails.json(); 
+} catch (error) {
+    console.log("Error Found in Admin Dashboard- ", error);
+}
+
+const panelCounts = await fetch(Astro.site + "api/panels.json").then(Response => Response.json());
+const servicesCounts = await fetch(Astro.site + "api/services.json").then(Response => Response.json());
+const messages = await fetch(Astro.site + "api/messages.json").then(Response => Response.json());
+
+let messagesCounts = 0;
+
+for (let i = 0; i < messages.length; i++) {
+    if( messages[i].status == "unread")
+    messagesCounts++;
+}
+
+const currentDate = new Date();
+const currentHour = currentDate.getHours();
+let greeting, coverPic;
+if (currentHour < 12) {
+    coverPic = "admin-cover1.jpg";
+    greeting = "Good morning!";
+} else if (currentHour < 18) {
+    coverPic = "admin-cover2.jpg";
+    greeting = "Good afternoon!";
+} else {
+    coverPic = "admin-cover3.jpg";
+    greeting = "Good evening!";
+}
+
+---
+
+<AdminLayout pageName="Dashboard" pageTitle="Your Dashboard">
+    <span class="p-5 flex items-center flex-col w-full">
+        <DashboardGreeting {coverPic} {greeting}></DashboardGreeting>
+    
+        <div class="dashboard-cards flex flex-wrap gap-4 justify-center items-center w-full mb-5">
+            <DashboardCards iconClass="fa-duotone fa-newspaper" cardColor="blue" cardTitle="SMM Panels" counts={panelCounts.length} redirectPath="/SMMPanel"/>
+            <DashboardCards iconClass="fa-solid fa-page" cardColor="green" cardTitle="Services" counts={servicesCounts.length} redirectPath="/services"/>
+            
+            {APIResponse.xataResponse.role == "superuser" && 
+                <DashboardCards iconClass="fa-duotone fa-messages" cardColor="pink" cardTitle="Unread Messages" counts={messagesCounts} redirectPath="/messages"/>
+            }
+            
+        </div>
+    </span>
+    <span class="hidden bg-blue-200 bg-green-200 bg-pink-200 text-blue-700 text-green-700 text-pink-700"></span>
+</AdminLayout>
+
+<script is:inline src="/assets/scripts/main.js"></script>
+<script>
+    // Update the time immediately and then every minute
+    updateTime();
+    setInterval(updateTime, 1000); // 60000 milliseconds = 1 minute
+</script>
+

@@ -1,0 +1,218 @@
+---
+import TextInput from "./components[admin]/TextInput.astro";
+import UsersCard from "./components[admin]/UsersCard.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/admin/signin/");
+}
+
+const allUsers = await fetch(Astro.site + "api/users.json");
+const usersAPIResponse = await allUsers.json();
+
+let currentUserID = adminCookie?.value || "";
+
+var messageToShow = "";
+if (Astro.request.method === "POST") {
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+
+        const response = await fetch(Astro.site + "api/users.json", {
+            method: "POST",
+            body: data,
+        });
+
+        const APIResponse = await response.json();
+        if (APIResponse.message == "User Data Saved Successfully") {
+            messageToShow =
+                `New User Added, with the Username - ${APIResponse.newUsername}`;
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+
+---
+
+<AdminLayout pageTitle="Users" pageName="Users">
+    
+    <div class="user-container size-full relative">
+        <div class="p-5 w-full">
+            <button id="userAddBtn"
+            type="button"
+            class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                <i class="fa-solid fa-plus"></i> Add New
+            </button>
+    
+            <div class="userProfile-container w-full flex flex-wrap gap-3 mt-5">
+                {
+                    usersAPIResponse.map((user:any) => (
+                        <UsersCard 
+                            userImg = {user.ProfilePic != null && user.ProfilePic.url}
+                            isYou = {currentUserID == user.id && true}
+                            id={user.id} 
+                            role={`${user.role.charAt(0).toUpperCase() + user.role.slice(1)} (${user.username.toLowerCase()})`} 
+                            username={currentUserID == user.id ?
+                                `${user.fullName} (YOU)`
+                                : user.fullName
+                            }>
+                        </UsersCard>
+                    ))
+                }
+            </div>
+    
+        </div>
+        <div class="Overlay serviceForm top-0 absolute invisible size-full z-[1] bg-[#525252a5] p-6">
+            <form
+                method="post"
+                class="w-full sticky top-[10vh] p-6 bg-[#f0f8ff] rounded-md flex flex-col justify-center items-center gap-5">
+                <i class="closeBtn serviceForm absolute -right-2 -top-2 cursor-pointer fa-solid fa-circle-xmark text-xl"></i>
+                <div class="formContainer flex w-full lg:gap-24 flex-col-reverse lg:flex-row ">
+                    <div class="fields flex flex-col gap-5 lg:w-2/4 w-full">
+                        <TextInput
+                            isRequired={true}
+                            placeholder="Elon Musk"
+                            textBoxId="userFullName"
+                            textLabelText="User's Full Name"
+                        />
+
+                        <span class="flex flex-col items-center gap-2">
+                            <label class="w-full text-left">Role *</label>
+        
+                            <span
+                                id="roleSelector" data-set-value=""
+                                class="flex justify-between relative cursor-pointer w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg"
+                                ><span id="roleSelectedValue">Select Role</span>
+                                <i class="fa-solid fa-caret-down"></i>
+                                <span
+                                    class="options invisible absolute left-0 top-14 bg-white w-full rounded-md flex flex-col z-[1]">
+                                    <span
+                                        class="roleOption hover:bg-slate-200 p-4 py-2 rounded-t-md cursor-pointer">Select Role</span>
+                                    <span
+                                        class="roleOption hover:bg-slate-200 p-4 py-2 cursor-pointer">Superuser</span>
+                                    <span
+                                        class="roleOption hover:bg-slate-200 p-4 py-2 rounded-b-md cursor-pointer">Normal User</span>
+                                </span>
+                            </span>
+                        </span>
+
+                        <button id="userAddBtnSave"
+                        type="submit"
+                        class="size-fit w-auto my-2 px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                            Save
+                        </button>
+                    </div>
+
+                    <div class="notes lg:w-[45%] w-full">
+                        <ol class="list-decimal text-sm flex flex-col gap-5">
+                            <li>
+                                After Saving you will be given user's default username and password for First Login
+                            </li>
+                            <li>
+                                Advise the user to use there Username and default password which is always assigned- '<b>new_pass</b>'.
+                            </li>
+                            <li>
+                                Advise new user to change Username and Password from the My Profile Page.
+                            </li>
+                            <li>
+                                <b>Note *</b> <i>Superuser</i> have the permission to modify everything where as <i>Normal</i> user can only add/update/delete Panels, Pages and Services.
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <input type="hidden" name="roleValue" id="roleValue" />
+            </form>
+        </div>
+    </div>
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/users"}
+                data-refresh = {"/users"}
+            />
+        )
+    }
+</AdminLayout>
+
+<script is:inline>
+    //#region Add Service Form Pop Up
+    function triggerServiceForm() {
+        document
+            .querySelector(".Overlay.serviceForm")
+            .classList.toggle("invisible");
+    }
+    const userNewBtn = document.getElementById("userAddBtn");
+    const userCloseBtn = document.querySelector(".closeBtn.serviceForm");
+    userNewBtn.onclick = () => triggerServiceForm();
+    userCloseBtn.onclick = () => triggerServiceForm();
+    //#endregion
+
+    //#region role Selection
+    const roleSelector = document.getElementById("roleSelector");
+    const roleValue = document.getElementById("roleSelectedValue");
+    const roleOptions = document.querySelectorAll(
+        "#roleSelector .options .roleOption",
+    );
+
+    roleSelector.onclick = function () {
+        roleSelector
+            .querySelector("span.options")
+            .classList.toggle("invisible");
+    };
+
+    roleOptions.forEach((roleOption) => {
+        roleOption.addEventListener("click", () => {
+            roleValue.innerHTML = roleOption.innerHTML;
+            document.getElementById("roleValue").value = roleValue.textContent.trim().toLowerCase();
+        });
+    });
+    //#endregion
+
+    //#region delete User
+    const allUsersDeleteBtns =document.querySelectorAll(".deleteUserBtn");
+    allUsersDeleteBtns.forEach(deleteUserBtn => {
+        deleteUserBtn.addEventListener("click", async ()=>{
+            var resp = window.confirm(`Are you sure you want to delete USER- ${deleteUserBtn.nextElementSibling.nextElementSibling.children[0].textContent} ?`);
+            if(resp == true){
+                await fetch(document.body.dataset.apiSite + `api/users/${deleteUserBtn.getAttribute("data-id")}`, {
+                    method : "DELETE"
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                        var message = "";
+                        if (data.status != 200) {
+                            message =
+                                "An problem occured while deleting. User could NOT be Deleted.";
+                        } else {
+                            message = "User Deleted";
+                            deleteUserBtn.parentElement.remove();
+                        }
+    
+                        Toastify({
+                            text: message,
+                            duration: 3000,
+                            close: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background:
+                                    "linear-gradient(to right, #5344f5, #3dbbc9)",
+                            },
+                            onClick: function () {}, // Callback after click
+                        }).showToast();
+                    });
+            }
+        })
+    });
+    //#endregion
+</script>

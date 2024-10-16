@@ -1,0 +1,20 @@
+---
+interface Props {
+    senderName :string
+    metaContent : string
+    msgStatus : string
+    id : string
+}
+
+const {senderName, metaContent, msgStatus, id} = Astro.props;
+---
+<span data-id={id} class="messageBox mx-1 mb-1 p-3 text-sm rounded-lg bg-white flex flex-col gap-1 shadow-md hover:shadow-lg cursor-pointer">
+    <span class="sender font-semibold">{senderName} 
+        <span class="tag text-xs rounded-md bg-green-500 text-white px-1"
+        class:list={[
+            msgStatus == "read" && "hidden"
+        ]}
+        >UNREAD</span>
+    </span>
+    <div class="sender-metacontent line-clamp-1">{metaContent}</div>
+</span>

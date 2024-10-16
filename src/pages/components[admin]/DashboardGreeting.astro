@@ -1,0 +1,23 @@
+---
+interface Props {
+    coverPic:string,
+    greeting: string
+}
+
+const {coverPic ,greeting} = Astro.props;
+---
+
+<div class="admin-greetings relative w-full h-56 rounded-xl mb-5">
+    <img src={"/assets/images/" + coverPic} alt="cover Pic" class="size-full pointer-events-none rounded-xl absolute brightness-50 object-cover">
+    <div class="content-container relative z-[1] p-6 size-full flex lg:flex-row flex-col-reverse text-white">
+        <div class="left flex lg:flex-col lg:w-[32%] w-full lg:justify-end lg:items-start items-end h-full">
+            <div class="time-wrapper">
+                <span class="time block w-fit text-3xl font-semibold"></span>
+                <span class="date block w-fit rounded-lg text-xl font-semibold p-2 bg-[#cbd5e186]"></span>
+            </div>
+        </div>
+        <div class="center">
+            <span class="greetings-message text-5xl">{greeting}</span>
+        </div>
+    </div>
+</div>

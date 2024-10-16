@@ -1,0 +1,8 @@
+{
+    "crons": [
+      {
+        "path": "/saveServices",
+        "schedule": "0 23 * * 0"
+      }
+    ]
+  }

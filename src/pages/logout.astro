@@ -1,0 +1,25 @@
+---
+import { isAdminLoggedIn } from "./js/utils";
+import AdminAuthLayout from "./layouts/adminAuthLayout.astro";
+
+const adminCookie = Astro.cookies.get("admin");
+
+if(isAdminLoggedIn(adminCookie)){
+    console.log("deleting Cookie");
+    Astro.cookies.delete("admin");
+}
+else
+    return Astro.redirect("/signin/");
+
+---
+
+<AdminAuthLayout title="Log out">
+
+    <h2 class="text-2xl font-bold">You are logged out</h2>
+    <h3 class="text-gray-400">Login to continue</h3>
+    <div class="links flex flex-col items-center gap-4 text-center">
+        <a href=`/` class="rounded-full px-10 py-2 bg-blue-600 text-white w-1/3 cursor-pointer shadow-lg hover:bg-blue-800 hover:shadow-xl">Home</a>
+        <a href="/signin" class="rounded-full px-10 py-2 bg-blue-600 text-white w-1/3 cursor-pointer shadow-lg hover:bg-blue-800 hover:shadow-xl">Admin Login</a>
+    </div>
+
+</AdminAuthLayout>

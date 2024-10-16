@@ -1,0 +1,236 @@
+---
+import TextArea from "./components[admin]/TextArea.astro";
+import TextInput from "./components[admin]/TextInput.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+
+const adminCookie = Astro.cookies.get("admin");
+
+if (!isAdminLoggedIn(adminCookie)) {
+    return Astro.redirect("/admin/signin/");
+}
+
+var messageToShow = "";
+let showOverlay = false;
+
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+        
+        if(data.get("widgetTitle") != null){
+            if(data.get("widgetId") != null){
+                const response = await fetch(
+                    Astro.site + "api/sidebarWidgets/"+ data.get("widgetId")?.toString(),
+                    {
+                        method: "PUT",
+                        body: data,
+                    },
+                );
+        
+                const APIResponse = await response.json();
+                if (APIResponse.message == "Sidebar Widget Data Updated Successfully") {
+                    messageToShow =
+                        "Sidebar Widget Data Updated Successfully.";
+                }
+            }
+            else{
+                const response = await fetch(
+                    Astro.site + "api/sidebarWidgets.json",
+                    {
+                        method: "POST",
+                        body: data,
+                    },
+                );
+        
+                const APIResponse = await response.json();
+                if (APIResponse.message == "Sidebar Widget Data Saved Successfully") {
+                    messageToShow =
+                        "New Sidebar Widget is Added.";
+                }
+            }
+        }
+        else{
+            const response = await fetch(
+                Astro.site + "api/siteData/" + import.meta.env.SiteSettingsID1,
+                {
+                    method: "PUT",
+                    body: data,
+                },
+            );
+    
+            const APIResponse = await response.json();
+            if (APIResponse.message == "Site Setting Data Updated Successfully") {
+                messageToShow =
+                    "Site Setting Data Saved. Please Redeploy your site to see the changes";
+            }
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+
+//Fetching Site Settings
+const allSiteFetch: any = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets.json").then(
+    (Response) => Response.json(),
+);
+---
+
+<AdminLayout pageName="Site Settings" pageTitle="Site Settings">
+    <span class="p-5 flex items-center relative flex-col w-full">
+        <form method="post" class="w-full flex gap-2 flex-col">
+            <h2 class="mb-4 text-xl font-bold">
+                Manage Sidebar (Homepage)
+            </h2>
+            <div
+                class="sidebarWidgets lg:w-2/3 w-full flex flex-col gap-4 justify-center items-center"
+            >
+                <button id="widgetAddBtn"
+                    type="button"
+                    class="size-fit w-auto p-3 text-sm text-white rounded-full bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                >
+                    <i class="fa-solid fa-plus"></i> Add New Widget</button
+                >
+
+                <ol class="w-full">
+                    {
+                        allSidebarWidgetsFetch.map((SidebarWidget:any) => (
+                            <li class="relative flex justify-between items-center rounded-lg my-3 w-full px-4 py-1 bg-gray-200 hover:bg-gray-300">
+                                {SidebarWidget.widgetTitle} <i class="h-6 w-6 rounded-full hover:bg-gray-400 flex justify-center items-center  cursor-pointer fa-solid fa-ellipsis-vertical" onclick="triggerMenu(this)"></i> 
+                                <span class="options hide min-w-[100px] absolute border border-[#8080802e] py-2 top-0 -right-24 z-10 flex flex-col bg-white rounded-lg shadow-sm">
+                                    <ul>
+                                        <li class="p-2 cursor-pointer px-3 hover:bg-[#bebebe5e]" data-id={SidebarWidget.id} onclick="triggerServiceForm(this, true)" data-widgetTitle={SidebarWidget.widgetTitle} data-widgetHTMLCode={SidebarWidget.widgetCodeBlock}>Edit</li>
+                                        <li class="p-2 cursor-pointer px-3 hover:bg-[#bebebe5e] deleteBtn" data-id={SidebarWidget.id} >Delete</li>
+                                    </ul>
+                                </span>
+                            </li>
+                        ))
+                    }
+                </ol>
+            </div>       
+        </form>
+
+        <div class="Overlay modalForm top-0 invisible absolute size-full z-[1] bg-[#525252a5] p-6">
+            <form
+                method="post"
+                class="w-full sticky top-[10vh] p-6 bg-[#f0f8ff] rounded-md flex flex-col justify-center items-center gap-5">
+                <i class="closeBtn modalForm absolute -right-2 -top-2 cursor-pointer fa-solid fa-circle-xmark text-xl"></i>
+                <div class="formContainer flex justify-center w-full lg:gap-24">
+                    <div class="fields flex flex-col gap-5 lg:w-2/4 w-full">
+                        <TextInput
+                            isRequired={true}
+                            placeholder="Widget Title"
+                            textBoxId="widgetTitle"
+                            textLabelText="Widget Title"
+                        />
+    
+                        <TextArea
+                            isRequired={true}
+                            placeholder="<Write or Paste HTML Code here/>"
+                            textBoxId="widgetHTMLCode"
+                            textLabelText="Write or Paste HTML Code here"
+                        />
+                        <input type="hidden" name="widgetId" id="widgetId">
+                    </div>
+                </div>
+    
+                <button id="formAddWidgetBtn"
+                    type="submit"
+                    class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                    <i class="fa-solid fa-play"></i> Add Widget
+                </button>
+            </form>
+        </div>
+    </span>
+    
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/"}
+            />
+        )
+    }
+</AdminLayout>
+
+<script is:inline>
+    //#region Add Service Form Pop Up
+    function triggerServiceForm(widgetHolder=null, isEdit = false) {
+        var widgetTitleVal = widgetHTMLCodeVal = "";
+
+        if(isEdit == true){
+            widgetTitleVal = widgetHolder.getAttribute("data-widgetTitle");
+            widgetHTMLCodeVal = widgetHolder.getAttribute("data-widgetHTMLCode");
+
+            widgetHolder.parentElement.parentElement.classList.toggle("hide");
+            document.querySelector("#formAddWidgetBtn").textContent="Update Widget";
+            document.querySelector("#formAddWidgetBtn").setAttribute("data-widgetID", widgetHolder.getAttribute("data-id"));
+            document.querySelector("#widgetId").value=widgetHolder.getAttribute("data-id");
+        }
+        document
+            .querySelector(".Overlay.modalForm")
+            .classList.toggle("invisible");
+        document.getElementById("widgetTitle").value = widgetTitleVal;
+        document.getElementById("widgetHTMLCode").value = widgetHTMLCodeVal;
+    }
+    const addWidgetBtn = document.getElementById("widgetAddBtn");
+    const modalCloseBtn = document.querySelector(".closeBtn.modalForm");
+    addWidgetBtn.onclick = () => triggerServiceForm();
+    modalCloseBtn.onclick = () => triggerServiceForm();
+    //#endregion
+    
+    //#region Service Delete Functionality
+    var allDeleteBtns = document.querySelectorAll(
+        ".options .deleteBtn",
+    );
+    allDeleteBtns.forEach((sidebarWidgetDeletebtn) => {
+        sidebarWidgetDeletebtn.addEventListener("click", async () => {
+
+            var resp = window.confirm(`Are you sure you want to delete this Widget?`);
+            if(resp == true)
+            await fetch(
+                    document.body.dataset.apiSite + "api/sidebarWidgets/" +
+                        sidebarWidgetDeletebtn.getAttribute("data-id").toString(),
+                    {
+                        method: "DELETE",
+                    },
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        var message = "";
+                        if (data.status != 200) {
+                            message =
+                                "Widget NOT Deleted. An problem occured while deleting";
+                        } else {
+                            message = "Sidebar Widget Deleted";
+                            sidebarWidgetDeletebtn.parentElement.parentElement.parentElement.remove();
+                        }
+    
+                        Toastify({
+                            text: message,
+                            duration: 3000,
+                            close: true,
+                            gravity: "bottom", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                                background:
+                                    "linear-gradient(to right, #5344f5, #3dbbc9)",
+                            },
+                            onClick: function () {}, // Callback after click
+                        }).showToast();
+                    });
+        });
+    });
+    //#endregion
+
+</script>

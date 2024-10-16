@@ -1,0 +1,175 @@
+---
+import TextArea from "./TextArea.astro";
+
+interface Props {
+    pageInfo?: any;
+    formType: string;
+}
+interface PanelDataStructure {
+    data: {
+        pageTitle: string;
+        pageContent: string;
+        PageDescription: string;
+        pageSlug: string;
+    };
+}
+let { pageInfo, formType } = Astro.props;
+
+if (!pageInfo) {
+    var temp: PanelDataStructure = {
+        data: {
+            pageTitle: "",
+            pageContent: "",
+            PageDescription: "",
+            pageSlug: ""
+        },
+    };
+    pageInfo = temp;
+}
+
+---
+<form method="post" class="w-full">
+    <div class="topBar sticky top-2 z-10 bg-[#efeef3] flex gap-4 w-full my-3 justify-between">
+        <input
+            required="true"
+            type="text"
+            id="titlePage"
+            name="titlePage"
+            placeholder="Page Title"
+            class="w-[40%] border-b border-b-blue-500 px-4 rounded-md"
+            value={pageInfo.data.pageTitle || ""}
+        />
+        <input
+            required="true"
+            type="text"
+            id="pageSlug"
+            name="pageSlug"
+            placeholder="Page Permalink/Slug"
+            class="w-[40%] border-b border-b-blue-500 px-4 rounded-md"
+            value={pageInfo.data.pageSlug || ""}
+        />
+        <button
+            type="submit"
+            class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+            ><i class="fa-solid fa-play"></i> {formType}</button
+        >
+    </div>
+    
+    <div class="contentTools flex gap-1 mb-2">
+        <button
+            type="button" id="btnCode"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 font-bold"
+            ><i class="fa-solid fa-code"></i></button>
+        <button
+            type="button" id="btnBold" onclick="(add_tags('b'))"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 font-bold"
+            >B</button>
+        <button
+            type="button" id="btnItalic" onclick="(add_tags('i'))"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 italic font-serif"
+            >I</button>
+        <button
+            type="button" id="btnUnderline" onclick="(add_tags('u'))"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 underline"
+            >U</button>
+        <button
+            type="button" id="btnUnderline" onclick="(add_tags('p'))"
+            class="h-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500"
+            >Paragraph</button>
+        <button
+            type="button" id="btnHeadings"
+            class="h-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 relative"
+            >Heading <i class="text-sm fa-solid fa-caret-down"></i>
+            <ul
+                class="absolute z-[3] hidden top-8 shadow-2xl rounded w-full bg-white">
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h1'))">h1</li>
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h2'))">h2</li>
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h3'))">h3</li>
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h4'))">h4</li>
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h5'))">h5</li>
+                <li class="hover:bg-slate-200 py-1 px-4" onclick="(add_tags('h6'))">h6</li>
+            </ul>
+        </button>
+
+        <!-- <button
+            type="button"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500 underline"
+            ><span
+                class="size-5 rounded font-bold bg-gradient-to-r from-blue-600 via-red-700 to-indigo-400 inline-flex justify-center items-center text-transparent bg-clip-text"
+                >A</span
+            ></button
+        >
+        <button
+            type="button"
+            class="size-[1.8rem] rounded flex justify-center items-center p-3 bg-gradient-to-br from-slate-300 to-blue-500 hover:to-slate-300 hover:blue-slate-500"
+            ><i class="fa-sharp fa-solid fa-images"></i></button
+        > -->
+    </div>
+    <div class="contentWrittingPanel">
+        <div
+            contenteditable="true"
+            class="contentEditor min-h-[60vh] max-h-[60vh] overflow-auto z-[2] w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg"
+        >
+        </div>
+
+        <textarea name="pageContent" id="pageContent" class="hidden min-h-[60vh] max-h-[60vh] overflow-auto z-[1] w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-slate-100 text-[#555555] text-sm shadow-lg" style="font-family: sans-serif;">{pageInfo.data.pageContent || ""}</textarea>
+    </div>
+    
+    <span class="my-5 block"></span>
+    <TextArea textValue={pageInfo.data.PageDescription || ""} isRequired={false} placeholder="Search Description of about 150 characters" textBoxId="pageMetaDesc" textLabelText="Search Description"></TextArea>
+</form>
+
+<script is:inline>
+    //#region Slug Creation on Key Enter
+    document
+        .getElementById("titlePage")
+        .addEventListener("input", function (event) {
+            var inputText = event.target.value;
+            document.getElementById("pageSlug").value = inputText
+                .toLowerCase()
+                .replaceAll(" ", "-");
+        });
+    //#endregion
+
+    const container_contenteditable = document.querySelector(".contentWrittingPanel .contentEditor");
+    const container_contentCode = document.querySelector(".contentWrittingPanel #pageContent");
+    const headerToolBtn = document.querySelector(".contentTools #btnHeadings");
+    const codeToolBtn = document.querySelector(".contentTools #btnCode");
+    
+    function add_tags(tags) {
+        //Retrieve the selected text :
+        sel = window.getSelection();
+        //Check if selection does contain something
+        if (sel != "") {
+            //set the innerHTML of container_contenteditable
+            //we're just wrapping a <b>-tag around the selected text
+            var text = container_contenteditable.innerHTML;
+            container_contenteditable.innerHTML = text.replace(sel, `<${tags}>` + sel + `</${tags}>`);
+        } else {
+            //if the selected text was blank
+            alert("Nothing selected.");
+        }
+    }
+    
+    container_contenteditable.addEventListener("input", ()=>{
+        container_contentCode.value = container_contenteditable.innerHTML;
+    })
+
+    window.addEventListener('load', function() {
+        console.log('All assets are loaded')
+        container_contenteditable.innerHTML = container_contentCode.value;
+    })
+    
+    container_contentCode.addEventListener("input", ()=>{
+        container_contenteditable.innerHTML = container_contentCode.value;
+    })
+
+    codeToolBtn.addEventListener("click", ()=>{
+        container_contentCode.value = container_contenteditable.innerHTML;
+        container_contenteditable.classList.toggle("hidden");
+        container_contentCode.classList.toggle("hidden");
+    })
+    headerToolBtn.addEventListener("click", ()=>{
+        headerToolBtn.querySelector("ul").classList.toggle("hidden");
+    })
+</script>

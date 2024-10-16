@@ -1,0 +1,31 @@
+---
+interface Props {
+    id:string
+    username:string
+    role:string
+    isYou : boolean
+    userImg? : string
+}
+
+const {id, username, role, isYou = false, userImg=""} = Astro.props;
+---
+
+<div class="cards relative flex flex-col gap-3 items-center justify-center lg:w-[24%] w-[45%] text-center border border-[#4d4d4d86] rounded-md p-4 transition-all ease-in-out duration-150 hover:shadow-lg hover:scale-105">
+    {
+        isYou == false &&
+        <span data-id={id} class="deleteUserBtn absolute top-1 right-1 p-1 text-xs rounded bg-red-200 text-red-500 cursor-pointer hover:font-semibold">
+            Delete
+        </span>
+    }           
+
+    <img src={
+        userImg != "" 
+        ? userImg
+        : "/assets/images/usericon.png"
+    }
+     alt="profile Image" class="rounded-full size-20">
+    <span>
+        <p class="font-semibold">{username}</p>
+        <p class="text-sm italic">{role}</p>
+    </span>
+</div>

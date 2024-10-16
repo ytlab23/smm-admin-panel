@@ -1,0 +1,28 @@
+---
+interface Props {
+    textLabelText :string
+    textBoxId :string
+    placeholder : string,
+    isRequired : boolean,
+    textValue? : string
+    fullHeight? : string
+}
+
+const {textLabelText, textBoxId ,placeholder ,isRequired, textValue, fullHeight} = Astro.props;
+
+---
+
+<span class="flex flex-col items-center gap-2">
+    <label class="w-full text-left" for="">{textLabelText} {isRequired && "*"}</label>
+    <textarea id={textBoxId} name={textBoxId} 
+    class="w-full p-2 maxh px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg"
+    class:list={
+        [
+            fullHeight ? fullHeight : "min-h-60"
+        ]
+    }
+    placeholder={placeholder}
+    required = {isRequired}
+
+    >{textValue}</textarea>
+</span>

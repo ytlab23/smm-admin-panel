@@ -1,0 +1,114 @@
+---
+import AdminPageFields from "./components[admin]/adminPageFields.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+
+const adminCookie = Astro.cookies.get("admin");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/admin/signin/");
+}
+const pageId = Astro.cookies.get("updatePageID");
+
+if(!isAdminLoggedIn(pageId)){
+    return Astro.redirect("/admin/pages/");
+}
+
+const SiteData = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+var messageToShow = "";
+let showOverlay = false;
+
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+
+        const response = await fetch(Astro.site + "api/pages/" + pageId?.value, {
+            method: "PUT",
+            body: data,
+        });
+
+        const APIResponse = await response.json();
+        // console.log("Response when Submitting New Page", APIResponse);
+        
+        if (APIResponse.message == "Page Data Updated Successfully") {
+            if(SiteData[0].siteDeployHook){
+                const deploymentHook1 = await fetch(SiteData[0].siteDeployHook, {
+                    method: "POST"
+                });
+                console.log(`Deployment trigger at ${SiteData[0].siteDeployHook}`);
+                console.log(`Webhook For Site - smmsearch.io`);
+                console.log(`Status`, deploymentHook1);
+            }
+
+            messageToShow =
+                "Page Data Updated. Click to See all Pages";
+        }
+        else if (APIResponse.message.includes("column [pageSlug]: is not unique")) {
+            messageToShow =
+                "Page Slug is you are using is Already in Use. Please try different Slug";
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+
+const fetchPagesInfo = await fetch(Astro.site + "api/pages/"+pageId?.value);
+const pageInfo = await fetchPagesInfo.json();
+---
+
+<AdminLayout pageTitle="Page Update" pageName="Page Update">
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/pages"}
+            />
+        )
+    }
+
+    <span class="p-5 flex items-center flex-col w-full">
+        <AdminPageFields 
+        {pageInfo}
+        formType="Update"></AdminPageFields>
+
+    </span>
+</AdminLayout>
+
+<style is:inline>
+    .contentEditor p{
+        margin-bottom: 10px;
+    }
+    .contentEditor h1{
+        font-size: 22px;
+        font-weight: 600;
+    }
+    .contentEditor h2{
+        font-size: 20px;
+        font-weight: 500;
+    }
+    .contentEditor h3{
+        font-size: 19px;
+        font-weight: 500;
+    }
+    .contentEditor h4{
+        font-size: 17px;
+        font-weight: 500;
+    }
+    .contentEditor h5{
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .contentEditor h6{
+        font-size: 15px;
+        font-weight: 500;
+    }
+</style>

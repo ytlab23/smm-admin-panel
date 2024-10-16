@@ -1,0 +1,154 @@
+---
+import RowDataPages from "./components[admin]/rowDataPages.astro";
+import AdminLayout from "./layouts/adminLayout.astro";
+import { formatDate, isAdminLoggedIn } from "./js/utils.ts";
+const adminCookie = Astro.cookies.get("admin");
+
+Astro.cookies.delete("updatePageID");
+
+if(!isAdminLoggedIn(adminCookie)){
+    return Astro.redirect("/signin/");
+}
+let toastMessage;
+
+interface pagesStructure {
+    id: string;
+    pageTitle : string;
+    pageContent : string;
+    PageDescription : string;
+    xata: {
+        createdAt: string;
+    };
+}
+
+const allPages = await fetch(Astro.site + "api/pages.json");
+const pagesAPIResponse: pagesStructure[] = await allPages.json();
+---
+
+<AdminLayout pageName="Pages" pageTitle="Pages">
+    <div class="table-data-container size-full p-5">
+        {
+            pagesAPIResponse.length > 0
+            ?
+            <div class="table-data-container w-full">
+                <div class="table-header flex w-full py-4 bg-[#6e7bd9] text-white font-bold rounded-tr-lg rounded-tl-lg">
+                    <div class="field px-3 w-[10%]">No.</div>
+                    <div class="field px-3 w-[30%]">Title</div>
+                    <div class="field px-3 w-[30%]">Date</div>
+                    <div class="field px-3 w-[30%]">Action</div>
+                </div>
+                <div class="table-data w-full rounded-br-lg rounded-bl-lg">
+                    {
+                        pagesAPIResponse
+                            .reverse()
+                            .map((page, index) => (
+                                <RowDataPages 
+                                No={index + 1}
+                                Title = {page.pageTitle}
+                                Publish_Date={formatDate(page.xata.createdAt)}
+                                Action = {page.id}
+                                slug = {page.pageSlug}
+                                />
+                            ))
+                    }
+                </div>
+            </div>
+            :
+            <div class="message size-full flex flex-col justify-center items-center">
+                <h2 class="text-3xl text-center font-semibold">No Pages are added till now</h2>
+                <a href="/pagesNew" class="p-3 rounded-md bg-[#5344f5] text-white" ><i class="px-3 fa-solid fa-file-plus-minus"></i> Add New Page</a>
+            </div>
+        }
+    </div>
+    
+    {
+        toastMessage && (
+            <span class="toast hidden" id="toast" data-message={toastMessage} />
+        )
+    }
+</AdminLayout>
+
+<script is:inline>
+    //#region Edit Button Function
+    var allEditBtns = document.querySelectorAll(".actionBtns .EditBtn");
+    allEditBtns.forEach((editBtn) => {
+        editBtn.addEventListener("click", ()=>{
+            document.cookie = `updatePageID=${editBtn.getAttribute("data-id").toString()}; path=/`;
+            window.location.href = "/pagesUpdate"
+        })
+    });
+    //#endregion
+
+    //#region Delete Button Function
+    var allDeleteBtns = document.querySelectorAll(".actionBtns .DeleteBtn");
+    allDeleteBtns.forEach((deleteBtn) => {
+        deleteBtn.addEventListener("click", async () => {
+            try {
+                await fetch(document.body.dataset.apiSite + "api/pages/" + deleteBtn.getAttribute("data-id").toString(),
+                {
+                    method: "DELETE",
+                })
+                .then((response) => response.json()).then((data) => {
+                    var message = "";
+                    if (data.status != 200) {
+                        message =
+                            "Page NOT Deleted. An problem occured while deleting";
+                    } else {
+                        message = "Page Deleted";
+                        deleteBtn.parentElement.parentElement.parentElement.remove();
+                    }
+                    Toastify({
+                        text: message,
+                        duration: 3000,
+                        close: true,
+                        gravity: "bottom", // `top` or `bottom`
+                        position: "right", // `left`, `center` or `right`
+                        stopOnFocus: true, // Prevents dismissing of toast on hover
+                        style: {
+                            background:
+                                "linear-gradient(to right, #5344f5, #3dbbc9)",
+                        },
+                        onClick: function () {}, // Callback after click
+                    }).showToast();
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1200);
+                });
+            } catch (error) {
+                Toastify({
+                    text: `Could not Delete because of error- ${error}`,
+                    duration: 3000,
+                    close: true,
+                    gravity: "bottom", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    style: {
+                        background:
+                            "linear-gradient(to right, #5344f5, #3dbbc9)",
+                    },
+                    onClick: function () {}, // Callback after click
+                }).showToast();
+            }
+        });
+    });
+    //#endregion
+
+    //#region Toast Notifications
+    try {
+        Toastify({
+            text: document.querySelector("#toast").getAttribute("data-message"),
+            duration: 3000,
+            close: true,
+            gravity: "bottom", // `top` or `bottom`
+            position: "right", // `left`, `center` or `right`
+            stopOnFocus: true, // Prevents dismissing of toast on hover
+            style: {
+                background: "linear-gradient(to right, #5344f5, #3dbbc9)",
+            },
+            onClick: function () {}, // Callback after click
+        }).showToast();
+    } catch (error) {
+        console.log(error);
+    }
+    //#endregion
+</script>
