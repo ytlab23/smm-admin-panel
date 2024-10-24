@@ -72,7 +72,7 @@ Astro.cookies.delete("updatePanelID");
 
 <script is:inline>
 
-    console.log(document.body.dataset.apiSite + "api/panels/");
+    console.log("api/panels/");
     //#region Edit Button Function
     var allEditBtns = document.querySelectorAll(".actionBtns .EditBtn");
     allEditBtns.forEach((editBtn) => {
@@ -91,7 +91,7 @@ Astro.cookies.delete("updatePanelID");
             var resp = window.confirm(`Are you sure you want to delete ${deleteBtn.parentElement.parentElement.parentElement.children[1].textContent} SMM Panel?`);
             if(resp == true){
                 await fetch(
-                    document.body.dataset.apiSite + "api/panels/" + deleteBtn.getAttribute("data-id").toString(),
+                    "api/panels/" + deleteBtn.getAttribute("data-id").toString(),
                     {
                         method: "DELETE",
                     },

@@ -183,7 +183,7 @@ if (Astro.request.method === "POST") {
         deleteUserBtn.addEventListener("click", async ()=>{
             var resp = window.confirm(`Are you sure you want to delete USER- ${deleteUserBtn.nextElementSibling.nextElementSibling.children[0].textContent} ?`);
             if(resp == true){
-                await fetch(document.body.dataset.apiSite + `api/users/${deleteUserBtn.getAttribute("data-id")}`, {
+                await fetch(`api/users/${deleteUserBtn.getAttribute("data-id")}`, {
                     method : "DELETE"
                 })
                 .then((response) => response.json())

@@ -198,7 +198,7 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
             var resp = window.confirm(`Are you sure you want to delete this Widget?`);
             if(resp == true)
             await fetch(
-                    document.body.dataset.apiSite + "api/sidebarWidgets/" +
+                    "api/sidebarWidgets/" +
                         sidebarWidgetDeletebtn.getAttribute("data-id").toString(),
                     {
                         method: "DELETE",

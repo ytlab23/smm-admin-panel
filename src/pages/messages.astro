@@ -117,7 +117,7 @@ if (!isAdminLoggedIn(adminCookie)) {
             messagePlaceholder.classList.remove("hidden");
 
             await fetch(
-                document.body.dataset.apiSite + "api/messages/" + msgBtn.getAttribute("data-id").toString(),
+                "api/messages/" + msgBtn.getAttribute("data-id").toString(),
             )
                 .then((response) => response.json())
                 .then((data) => {
@@ -153,7 +153,7 @@ if (!isAdminLoggedIn(adminCookie)) {
 
     async function setAsRead(id) {
         await fetch(
-            document.body.dataset.apiSite + "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
+            "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
             {
                 method: "PUT",
             },
@@ -165,7 +165,7 @@ if (!isAdminLoggedIn(adminCookie)) {
     }
     UnreadBtn.addEventListener("click", async () => {
         await fetch(
-            document.body.dataset.apiSite + "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
+            "api/messages/" + UnreadBtn.getAttribute("data-id").toString(),
             {
                 // Append data to the form data object
                 method: "PATCH",
@@ -200,7 +200,7 @@ if (!isAdminLoggedIn(adminCookie)) {
     });
     DeleteBtn.addEventListener("click", async () => {
         await fetch(
-            document.body.dataset.apiSite + "api/messages/" + DeleteBtn.getAttribute("data-id").toString(),
+            "api/messages/" + DeleteBtn.getAttribute("data-id").toString(),
             {
                 method: "DELETE",
             },
