@@ -84,7 +84,7 @@ const pagesAPIResponse: pagesStructure[] = await allPages.json();
     allDeleteBtns.forEach((deleteBtn) => {
         deleteBtn.addEventListener("click", async () => {
             try {
-                await fetch(document.body.dataset.apiSite + "api/pages/" + deleteBtn.getAttribute("data-id").toString(),
+                await fetch("api/pages/" + deleteBtn.getAttribute("data-id").toString(),
                 {
                     method: "DELETE",
                 })

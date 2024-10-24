@@ -225,7 +225,7 @@ const allServices = await allServicesFetch.json();
             var resp = window.confirm(`Are you sure you want to delete ${serviceDeletebtn.previousElementSibling.textContent} service?`);
             if(resp == true)
             await fetch(
-                    document.body.dataset.apiSite + "api/services/" +
+                    "api/services/" +
                         serviceDeletebtn.getAttribute("data-service-id").toString(),
                     {
                         method: "DELETE",
