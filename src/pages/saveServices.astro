@@ -25,9 +25,24 @@ if(isAutoFetchEnable === "true"){
     
     //Executing every API and Storing services in a Array
     for (let i = 0; i < AllApiLinks.length; i++) {
-        let panelServicesdata = await fetch(AllApiLinks[i][0]).then((Response) =>
-            Response.json(),
-        );
+        let panelServicesdata;
+        try {
+            panelServicesdata = await fetch(AllApiLinks[i][0]).then((Response) =>
+                Response.json(),
+            );
+        } catch (error) {
+            console.log(AllApiLinks[i][0]);
+        }
+
+        if(panelServicesdata.length == 0){
+            try {
+                panelServicesdata = await fetch(AllApiLinks[i][0], {method:"POST"}).then((Response) =>
+                    Response.json(),
+                );
+            } catch (error) {
+                console.log("POST", AllApiLinks[i][0]);
+            }
+        }
     
         for (let j = 0; j < panelServicesdata.length; j++) {
             panelServicesdata[j].panelName = AllApiLinks[i][1];
