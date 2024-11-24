@@ -1,0 +1,13 @@
+{
+  "id": "mig_con97bmm335mc33n4utg",
+  "parentID": "mig_con97a6pasvupdpr4c1g",
+  "checksum": "1:72f62ae733e6187ba750ebce490ec1fe971305c17e321e35f8e31b4d0cd9a95b",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "siteLogo",
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

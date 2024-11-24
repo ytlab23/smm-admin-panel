@@ -1,0 +1,19 @@
+{
+  "id": "mig_con97kem335mc33n4uug",
+  "parentID": "mig_con97depasvupdpr4c2g",
+  "checksum": "1:e9827d2ef0fe74c7592469368ac6608e8d6255016678df585530d3efca221f06",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "homeBackgroundImage",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

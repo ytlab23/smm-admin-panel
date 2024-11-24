@@ -1,0 +1,19 @@
+{
+  "id": "mig_con97depasvupdpr4c2g",
+  "parentID": "mig_con97bmm335mc33n4utg",
+  "checksum": "1:f70ab2caf50f8e6a785176158f4f72246b32e0b6997a3869ef7e2655980b0884",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "siteLog",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

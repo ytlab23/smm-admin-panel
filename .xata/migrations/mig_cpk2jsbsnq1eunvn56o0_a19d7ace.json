@@ -1,0 +1,12 @@
+{
+  "id": "mig_cpk2jsbsnq1eunvn56o0",
+  "parentID": "mig_cpk2bp2las933e4pieqg",
+  "checksum": "1:a19d7ace33e96e2d832b525c4cd97ca3ebc20f6ec11dcae398952bcfb1680dd4",
+  "operations": [
+    {
+      "addTable": {
+        "table": "panel-services"
+      }
+    }
+  ]
+}

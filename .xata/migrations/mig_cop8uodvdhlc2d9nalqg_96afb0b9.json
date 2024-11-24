@@ -1,0 +1,16 @@
+{
+  "id": "mig_cop8uodvdhlc2d9nalqg",
+  "parentID": "mig_cop8tq0r3sgtq2t5dhsg",
+  "checksum": "1:96afb0b959e394a69c2dc6243511d8f860402d75fd302b34f8a74ab1fd51fff3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "status",
+          "type": "string"
+        },
+        "table": "contact_msgs"
+      }
+    }
+  ]
+}

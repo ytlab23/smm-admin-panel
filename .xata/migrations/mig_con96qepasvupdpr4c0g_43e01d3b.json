@@ -1,0 +1,16 @@
+{
+  "id": "mig_con96qepasvupdpr4c0g",
+  "parentID": "mig_con96jeg0s9gl2cq8gug",
+  "checksum": "1:43e01d3bd725d7448b5224e801d743ed1fe47ba8f61670e9de3928408d34b7f9",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "SiteTitle",
+          "type": "string"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mig_cpjib920796lbsbev3f0",
+  "parentID": "mig_cpjib6klhai4o4ioe330",
+  "checksum": "1:0347ec2cd54296b8db670a3c771918984263a93b761f1da46a9b8d52a228698c",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceMin",
+          "type": "string"
+        },
+        "table": "panel-services"
+      }
+    }
+  ]
+}

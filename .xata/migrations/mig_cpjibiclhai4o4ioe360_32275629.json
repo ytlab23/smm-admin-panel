@@ -1,0 +1,13 @@
+{
+  "id": "mig_cpjibiclhai4o4ioe360",
+  "parentID": "mig_cpjibfslhai4o4ioe350",
+  "checksum": "1:32275629cb4bd48c33a345f72b0f7523ad0c1b54fd3b90cf65d6c39e6fb02a31",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "serviceUploadDate",
+        "table": "panel-services"
+      }
+    }
+  ]
+}

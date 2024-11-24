@@ -1,0 +1,12 @@
+{
+  "id": "mig_con98u6g0s9gl2cq8h30",
+  "parentID": "mig_con98fepasvupdpr4c70",
+  "checksum": "1:ef9668bf5d541d2b22e6c8062078f5d3c1b373f6269238cb40c1fd7aa4345518",
+  "operations": [
+    {
+      "addTable": {
+        "table": "sidebarWidgets"
+      }
+    }
+  ]
+}

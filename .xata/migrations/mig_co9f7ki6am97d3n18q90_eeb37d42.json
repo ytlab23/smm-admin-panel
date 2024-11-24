@@ -1,0 +1,13 @@
+{
+  "id": "mig_co9f7ki6am97d3n18q90",
+  "parentID": "mig_co9ea7a6am97d3n18png",
+  "checksum": "1:eeb37d42dd650b4dc4b79c32eb7e11517f71c660688e7526e6d4797e5b5f0950",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "panelTotalServices",
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

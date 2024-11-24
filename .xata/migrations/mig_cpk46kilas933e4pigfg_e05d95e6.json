@@ -1,0 +1,16 @@
+{
+  "id": "mig_cpk46kilas933e4pigfg",
+  "parentID": "mig_cpk46hilas933e4pigeg",
+  "checksum": "1:e05d95e689593ae6899b3c20ed42585d61e17a8758079d7f02291eeb5455bfdc",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceRate",
+          "type": "string"
+        },
+        "table": "panel-services"
+      }
+    }
+  ]
+}

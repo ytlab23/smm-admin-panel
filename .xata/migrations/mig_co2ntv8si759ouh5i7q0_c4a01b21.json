@@ -1,0 +1,11 @@
+{
+  "id": "mig_co2ntv8si759ouh5i7q0",
+  "checksum": "1:c4a01b212c842731e2ee462d42756a5a063efcbc6350e69ec2fe8b7caace7dd7",
+  "operations": [
+    {
+      "addTable": {
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

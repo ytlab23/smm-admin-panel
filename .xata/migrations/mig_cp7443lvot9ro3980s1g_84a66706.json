@@ -1,0 +1,19 @@
+{
+  "id": "mig_cp7443lvot9ro3980s1g",
+  "parentID": "mig_cp73eaojdma04a9hq07g",
+  "checksum": "1:84a667063354a016ff1a70f0cd345299bebded05c7bc8befae62be74ec00edba",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panel_id",
+          "type": "link",
+          "link": {
+            "table": "panels-datatable"
+          }
+        },
+        "table": "panel_services"
+      }
+    }
+  ]
+}

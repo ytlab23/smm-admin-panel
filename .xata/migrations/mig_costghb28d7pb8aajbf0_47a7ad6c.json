@@ -1,0 +1,16 @@
+{
+  "id": "mig_costghb28d7pb8aajbf0",
+  "parentID": "mig_corl7b86l5qqkni4l5f0",
+  "checksum": "1:47a7ad6c6be92929d4ec9a2348afc6724a39c8369f2bbe83a28a632aff91c0de",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelMetaDesc",
+          "type": "text"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

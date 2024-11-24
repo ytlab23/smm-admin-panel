@@ -1,0 +1,13 @@
+{
+  "id": "mig_corl77g6l5qqkni4l5e0",
+  "parentID": "mig_corl76ddcfnf8kfv4h60",
+  "checksum": "1:31c8ec45f0c8d7e8a501015a4271021aa70d85561c6c5830d0e29a930c2a1b93",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "pageSlug",
+        "table": "pages"
+      }
+    }
+  ]
+}

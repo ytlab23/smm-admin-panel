@@ -1,0 +1,17 @@
+{
+  "id": "mig_cop8v18r3sgtq2t5dhug",
+  "parentID": "mig_cop8uq0r3sgtq2t5dhtg",
+  "checksum": "1:d43221fd5539d8aa75b35d032fb2ac4e6a67336cdac8c7176f0cdaa6653d19d6",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "status",
+          "type": "string",
+          "defaultValue": "unread"
+        },
+        "table": "contact_msgs"
+      }
+    }
+  ]
+}

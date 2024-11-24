@@ -1,0 +1,12 @@
+{
+  "id": "mig_cpdeu1l5hs5a4gj7ghm0",
+  "parentID": "mig_cpdetti95h7k489463ng",
+  "checksum": "1:0868bed533bfa1c5b014d2bea7b2a372bdac767c2f9f4d4a7212f688c6631a1c",
+  "operations": [
+    {
+      "removeTable": {
+        "table": "ratingOtherSites"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mig_codcg880j6r1cfossr5g",
+  "parentID": "mig_co9f7ki6am97d3n18q90",
+  "checksum": "1:4f5f08e00b1f4176bcbfa65ebcb9c2697cb470a023b0a09399bf2441b0fd7f42",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "servicesList",
+          "type": "json"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

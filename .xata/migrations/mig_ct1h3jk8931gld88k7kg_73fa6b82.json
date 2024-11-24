@@ -1,0 +1,16 @@
+{
+  "id": "mig_ct1h3jk8931gld88k7kg",
+  "parentID": "mig_cru3lt2fq99qticmen40",
+  "checksum": "1:73fa6b8203d683f4508e5582587ebe053674a21e5bf57e141a0026cc4c703212",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "emailAutoReplyContent",
+          "type": "json"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "mig_coddur66fopstmtchadg",
+  "parentID": "mig_coddu880j6r1cfossrjg",
+  "checksum": "1:6e3191c3670cbeed9739802d00f9ede581a9d7cb21297529f3f8a63b60a7fa3b",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceLogo",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "services"
+      }
+    }
+  ]
+}

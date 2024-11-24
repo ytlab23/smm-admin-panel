@@ -1,0 +1,16 @@
+{
+  "id": "mig_cp7448lsk2gprn6li77g",
+  "parentID": "mig_cp7443lvot9ro3980s1g",
+  "checksum": "1:055ed3c3d2f62f6f9ea8ccac5108e2b195ffce2f06677662907a9673bcba2712",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "All_Services",
+          "type": "json"
+        },
+        "table": "panel_services"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "mig_cop8uq0r3sgtq2t5dhtg",
+  "parentID": "mig_cop8uodvdhlc2d9nalqg",
+  "checksum": "1:af321e1ec7fb862ccc74b3186527bc72697397a1840dc9d93a23a91e4e689990",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "status",
+        "table": "contact_msgs"
+      }
+    }
+  ]
+}

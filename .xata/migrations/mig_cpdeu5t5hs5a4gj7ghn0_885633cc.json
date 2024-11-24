@@ -1,0 +1,16 @@
+{
+  "id": "mig_cpdeu5t5hs5a4gj7ghn0",
+  "parentID": "mig_cpdeu1l5hs5a4gj7ghm0",
+  "checksum": "1:885633cc293d4b291deeb0d6f63671f82950ad727f8b735fbd2d4a3857a2bfc2",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "ratingOtherSites",
+          "type": "json"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

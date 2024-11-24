@@ -1,0 +1,16 @@
+{
+  "id": "mig_co9ea0rojfo0nv6llk0g",
+  "parentID": "mig_co62eu27l01k6601cnhg",
+  "checksum": "1:e0db1cdd783a0afd1898baa02f85b9df22405d4196980c246ab3eb3c2ebd1790",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "rating",
+          "type": "int"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

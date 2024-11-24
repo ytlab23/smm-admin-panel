@@ -1,0 +1,16 @@
+{
+  "id": "mig_co2nuqr3upnaf0a6p7og",
+  "parentID": "mig_co2nunb3upnaf0a6p7l0",
+  "checksum": "1:759c2bf85606162cdc279c524484f91791a0f0df3625bfb1637918935315f1fa",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelWebisteURL",
+          "type": "string"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mig_combsuem335mc33n4q8g",
+  "parentID": "mig_codduug0j6r1cfossrkg",
+  "checksum": "1:48ba96874c1f964fa7bfd0495273a5741bee4c05a584f9def336ae63f3640f87",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "role",
+          "type": "string"
+        },
+        "table": "users"
+      }
+    }
+  ]
+}

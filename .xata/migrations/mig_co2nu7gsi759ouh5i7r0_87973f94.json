@@ -1,0 +1,16 @@
+{
+  "id": "mig_co2nu7gsi759ouh5i7r0",
+  "parentID": "mig_co2ntv8si759ouh5i7q0",
+  "checksum": "1:87973f9459d1b9a156918a747b4e694040e1225c596398099cb51920bda5c3b3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelTitle",
+          "type": "string"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

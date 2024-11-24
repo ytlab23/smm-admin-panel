@@ -1,0 +1,16 @@
+{
+  "id": "mig_co62eqq6am97d3n180g0",
+  "parentID": "mig_co62eni6am97d3n180f0",
+  "checksum": "1:db4edef635c613050fbf7fc4061d8052bf5b7f526e67c34e646ef7136e47c062",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelTextDescrition",
+          "type": "text"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

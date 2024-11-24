@@ -1,0 +1,12 @@
+{
+  "id": "mig_cpjiatklhai4o4ioe2ug",
+  "parentID": "mig_cpdeu5t5hs5a4gj7ghn0",
+  "checksum": "1:6ca8945cb87bbb2893cd18fe3bc27cbda158c3b4a09551f4c766b96443d29f48",
+  "operations": [
+    {
+      "removeTable": {
+        "table": "panel-services"
+      }
+    }
+  ]
+}

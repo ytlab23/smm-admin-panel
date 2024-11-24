@@ -1,0 +1,13 @@
+{
+  "id": "mig_cpk2kirsnq1eunvn56t0",
+  "parentID": "mig_cpk2kgjsnq1eunvn56s0",
+  "checksum": "1:a983141aa1a8cf253ac93837fbdbb9610f981ff5cf8246373ae954362d1316ea",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "serviceUploadDate",
+        "table": "panel-services"
+      }
+    }
+  ]
+}

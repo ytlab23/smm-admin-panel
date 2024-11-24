@@ -1,0 +1,16 @@
+{
+  "id": "mig_co2nv533upnaf0a6p860",
+  "parentID": "mig_co2nv0r3upnaf0a6p810",
+  "checksum": "1:6dfaa5b7239ec373ed57f5fe3922f19fe395bfcc5bfc624d11e7fccb08e685f2",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelAPILink",
+          "type": "string"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

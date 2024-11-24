@@ -4,6 +4,11 @@ import TextInput from "./components[admin]/TextInput.astro";
 import { isAdminLoggedIn } from "./js/utils";
 import AdminLayout from "./layouts/adminLayout.astro";
 
+//Fetching Site Settings
+const allSiteFetch: any = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
 const adminCookie = Astro.cookies.get("admin");
 
 if (!isAdminLoggedIn(adminCookie)) {
@@ -18,38 +23,11 @@ if (Astro.request.method === "POST") {
     try {
         const data = await Astro.request.formData();
         // console.log("Form Data at client side - ", data);
-        
-        if(data.get("widgetTitle") != null){
-            if(data.get("widgetId") != null){
-                const response = await fetch(
-                    Astro.site + "api/sidebarWidgets/"+ data.get("widgetId")?.toString(),
-                    {
-                        method: "PUT",
-                        body: data,
-                    },
-                );
-        
-                const APIResponse = await response.json();
-                if (APIResponse.message == "Sidebar Widget Data Updated Successfully") {
-                    messageToShow =
-                        "Sidebar Widget Data Updated Successfully.";
-                }
-            }
-            else{
-                const response = await fetch(
-                    Astro.site + "api/sidebarWidgets.json",
-                    {
-                        method: "POST",
-                        body: data,
-                    },
-                );
-        
-                const APIResponse = await response.json();
-                if (APIResponse.message == "Sidebar Widget Data Saved Successfully") {
-                    messageToShow =
-                        "New Sidebar Widget is Added.";
-                }
-            }
+        if(data.get("isRedeploy") != ''){
+            const response = await fetch(allSiteFetch[0].siteDeployHook ,{method: "POST"});
+    
+            const APIResponse = await response.text();
+            console.log(APIResponse);
         }
         else{
             const response = await fetch(
@@ -73,14 +51,6 @@ if (Astro.request.method === "POST") {
     }
 }
 
-//Fetching Site Settings
-const allSiteFetch: any = await fetch(Astro.site + "api/siteData.json").then(
-    (Response) => Response.json(),
-);
-
-const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets.json").then(
-    (Response) => Response.json(),
-);
 ---
 
 <AdminLayout pageName="Site Settings" pageTitle="Site Settings">
@@ -98,7 +68,8 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                                 <img
                                     id="uploadedImageLogo"
                                     class="size-[110px] object-contain rounded-md"
-                                    src={allSiteFetch[0].siteLog.url != ""
+                                    src={
+                                        (allSiteFetch[0].siteLog != null)
                                         ? allSiteFetch[0].siteLog.url
                                         : "/assets/images/placeholderImage.jpg"}
                                 />
@@ -127,7 +98,7 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                                 <img
                                     id="uploadedImageFavicon"
                                     class="size-[110px] object-cover rounded-md"
-                                    src={allSiteFetch[0].siteFavicon.url != ""
+                                    src={allSiteFetch[0].siteFavicon != null
                                         ? allSiteFetch[0].siteFavicon.url
                                         : "/assets/images/placeholderImage.jpg"}
                                 />
@@ -164,9 +135,7 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                     />
                 </div>
 
-                <span
-                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
-                ></span>
+                <span class="divider border-t-2 border-dashed border-gray-600 my-5 block"></span>
                 <h2 class="mb-4 text-xl font-bold">Homepage Settings</h2>
                 <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
                     <div class="imageFlex flex flex-col lg:flex-row w-full gap-1">
@@ -177,8 +146,7 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                                 <img
                                     id="uploadedImageHeaderBg"
                                     class="w-1/2 max-h-32 min-h-20 object-cover rounded-md"
-                                    src={(allSiteFetch[0].homeBackgroundImage != null && allSiteFetch[0].homeBackgroundImage.url) !=
-                                    ""
+                                    src={allSiteFetch[0].homeBackgroundImage != null 
                                         ? allSiteFetch[0].homeBackgroundImage.url
                                         : "/assets/images/placeholderImage.jpg"}
                                 />
@@ -208,9 +176,7 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                     />
                 </div>
 
-                <span
-                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
-                ></span>
+                <span class="divider border-t-2 border-dashed border-gray-600 my-5 block" ></span>
 
                 <h2 class="mb-4 text-xl font-bold">Functional Settings</h2>
                 <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
@@ -238,11 +204,39 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                         textBoxId="siteDeployHook"
                         textLabelText="Site Deployment Hook URL"
                     />
+                    <button id="redeployBtn" type="button" class="px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"><i class="fa-regular fa-arrow-rotate-right"></i> Force Re-Deploy</button>
+                    
                 </div>
 
-                <span
-                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
-                ></span>
+                <span class="divider border-t-2 border-dashed border-gray-600 my-5 block"></span>
+                <h2 class="mb-4 text-xl font-bold">Email Settings</h2>
+                <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
+                    <TextInput
+                        textValue={""}
+                        inputType="text"
+                        isRequired={false}
+                        placeholder="Best SMM Listing Network"
+                        textBoxId="emailFrom"
+                        textLabelText="Email From Name"
+                        showSuggestion ={false}
+                    />
+                    <TextInput
+                        textValue={""}
+                        inputType="text"
+                        isRequired={false}
+                        placeholder="A Catchy Subject Line..."
+                        textBoxId="emailSubject"
+                        textLabelText="Subject"
+                        showSuggestion ={false}
+                    />
+
+                    <label class="w-full text-left" for="">{"Auto Reply Message *"}</label>
+                    <div id="editorJsHolder_EmailContent" class="editorJsHolder min-h-60 max-h-80 overflow-auto z-[2] w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg"></div>
+                    <textarea name="emailJs_Content" class="hidden" id="emailJs_Content"></textarea>
+                    
+                </div>
+
+                <span class="divider border-t-2 border-dashed border-gray-600 my-5 block"></span>
 
                 <!-- Hidden Fields for File/Image Upload -->
                 <input type="hidden" name="logoImageName" id="logoImageName" />
@@ -260,46 +254,20 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                 <input type="hidden" name="homepgBgImageName_2" id="homepgBgImageName_2" />
                 <input type="hidden" name="homepgBgImageBase64_2" id="homepgBgImageBase64_2" />
                 <input type="hidden" name="homepgBgImageFileType_2" id="homepgBgImageFileType_2" />
+                
+                <input type="hidden" name="isRedeploy" id="isRedeploy" />
+                
+                <!-- Only for Receiving from Database -->
+                <input type="hidden" name="emailConfigJSON" id="emailConfigJSON" value={JSON.stringify(allSiteFetch[0].emailAutoReplyContent)} /> 
             </div>
 
-            <button
+            <button id="submitFrmBtn"
                 type="submit"
                 class="size-fit sticky top-4 w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
                 ><i class="fa-solid fa-play"></i> Save</button
             >
         </form>
 
-        <div class="Overlay modalForm top-0 invisible absolute size-full z-[1] bg-[#525252a5] p-6">
-            <form
-                method="post"
-                class="w-full sticky top-[10vh] p-6 bg-[#f0f8ff] rounded-md flex flex-col justify-center items-center gap-5">
-                <i class="closeBtn modalForm absolute -right-2 -top-2 cursor-pointer fa-solid fa-circle-xmark text-xl"></i>
-                <div class="formContainer flex justify-center w-full lg:gap-24">
-                    <div class="fields flex flex-col gap-5 lg:w-2/4 w-full">
-                        <TextInput
-                            isRequired={true}
-                            placeholder="Widget Title"
-                            textBoxId="widgetTitle"
-                            textLabelText="Widget Title"
-                        />
-    
-                        <TextArea
-                            isRequired={true}
-                            placeholder="<Write or Paste HTML Code here/>"
-                            textBoxId="widgetHTMLCode"
-                            textLabelText="Write or Paste HTML Code here"
-                        />
-                        <input type="hidden" name="widgetId" id="widgetId">
-                    </div>
-                </div>
-    
-                <button id="formAddWidgetBtn"
-                    type="submit"
-                    class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
-                    <i class="fa-solid fa-play"></i> Add Widget
-                </button>
-            </form>
-        </div>
     </span>
     
     {
@@ -307,12 +275,74 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
             <span
                 class="toast hidden"
                 id="toast"
+                data-refresh = {"/site-settings"}
                 data-message={messageToShow}
                 data-destination={"/"}
             />
         )
     }
 </AdminLayout>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/underline@latest"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/quote@latest"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/@editorjs/marker@latest"></script>
+
+<script is:inline>
+    //#region Editor JS
+    const editorJSOutput = document.querySelector("#emailJs_Content"); //Used for Sending JSON version of EditorJS
+    let emailConfigJSON = document.querySelector("#emailConfigJSON"); //Used when Database already have Email template and Reading
+
+    let previousData;
+    try {
+        previousData = JSON.parse(emailConfigJSON.value.trim()).emailContent;
+        document.querySelector("#emailFrom").value = JSON.parse(emailConfigJSON.value.trim()).emailFrom;
+        document.querySelector("#emailSubject").value = JSON.parse(emailConfigJSON.value.trim()).emailSubject;
+
+    } catch (error) {
+        console.log(error);
+    }
+
+    const editor = new EditorJS({
+        holder: "editorJsHolder_EmailContent",
+        tools: {
+            header: Header,
+            quote: Quote,
+            marker: Marker,
+            underline: Underline,
+            list: EditorjsList,
+        },
+        inlineToolbar: ["link", "bold", "italic", "underline"],
+        placeholder: "Email Auto Reply Content",
+        data: {
+            blocks: previousData,
+        },
+    });
+
+    function saveEditorData() {
+        editor
+            .save()
+            .then((outputData) => {
+                for (let i = 0; i < outputData.blocks.length; i++) {
+                    delete outputData.blocks[i].id;
+                }
+                editorJSOutput.value = JSON.stringify(outputData.blocks)
+                    .replaceAll("&nbsp;", " ")
+                    .replaceAll("  ", " ")
+                    .replaceAll("  ", " ");
+            })
+            .catch((error) => {
+                console.log("Saving failed:", error);
+            });
+    }
+
+    document.querySelector("#submitFrmBtn").addEventListener("click", ()=>{
+        saveEditorData();
+    })
+    //#endregion
+</script>
 
 <script is:inline>
     //LOGO
@@ -383,4 +413,19 @@ const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets
                 };
             }
         });
+
+    //Redeploy
+    const redeployBtn = document.querySelector("#redeployBtn");
+    const siteDeployHookURL = document.querySelector("#siteDeployHook").value;
+    redeployBtn.addEventListener("click", ()=>{
+        document.querySelector("#isRedeploy").value = "true";
+    })
+
+    
 </script>
+
+<style is:inline>
+    .codex-editor__redactor{
+        padding: 0 !important;
+    }
+</style>

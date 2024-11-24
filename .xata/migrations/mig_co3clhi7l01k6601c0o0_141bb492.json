@@ -1,0 +1,12 @@
+{
+  "id": "mig_co3clhi7l01k6601c0o0",
+  "parentID": "mig_co3ckoq6am97d3n17akg",
+  "checksum": "1:141bb4921fc66c018ca8a8c7b2ee2a1b4a2a6a942e040a19aa6226262eff7319",
+  "operations": [
+    {
+      "addTable": {
+        "table": "contact_msgs"
+      }
+    }
+  ]
+}

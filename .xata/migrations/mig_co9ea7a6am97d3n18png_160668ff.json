@@ -1,0 +1,16 @@
+{
+  "id": "mig_co9ea7a6am97d3n18png",
+  "parentID": "mig_co9ea0rojfo0nv6llk0g",
+  "checksum": "1:160668ff36710d8a2f677d5d6b3c3caa92de841c1cb880c8a1adf1e0f4122931",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "paymentOptions",
+          "type": "json"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

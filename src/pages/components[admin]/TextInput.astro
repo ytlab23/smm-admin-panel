@@ -7,8 +7,10 @@ interface Props {
     textValue? :string
     inputType? :any
     isLowerCaseText? :boolean
+    isDisabled ?: boolean
+    showSuggestion ?: boolean
 }
-const {textLabelText, textBoxId, placeholder, isRequired, textValue, inputType="text",isLowerCaseText = false } = Astro.props;
+const {textLabelText, textBoxId, placeholder, isRequired, textValue, inputType="text",isLowerCaseText = false, isDisabled=false, showSuggestion=true } = Astro.props;
 
 ---
 
@@ -19,9 +21,11 @@ const {textLabelText, textBoxId, placeholder, isRequired, textValue, inputType="
         isLowerCaseText ? "return forceLower(this);" : ""
     }
     type={inputType} id={textBoxId} name={textBoxId} 
-    class="w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg"
+    class="w-full p-2 px-3 rounded-md border border-[#f4f4f4] bg-white text-[#555555] shadow-lg disabled:bg-gray-300"
     placeholder={placeholder}
     required = {isRequired}
     value={textValue}
+    disabled = {isDisabled}
+    autocomplete={!showSuggestion ? "off" : "" }
     >
 </span>

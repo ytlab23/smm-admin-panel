@@ -1,0 +1,17 @@
+{
+  "id": "mig_co62eni6am97d3n180f0",
+  "parentID": "mig_co5c0b26am97d3n17o2g",
+  "checksum": "1:181614d9ed6a74fe5c11d95c9ff49bfb6461f5b7addf13bee9df29139e077bb0",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelSlug",
+          "type": "string",
+          "unique": true
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

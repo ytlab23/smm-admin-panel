@@ -1,0 +1,13 @@
+{
+  "id": "mig_cp744ggjdma04a9hq0k0",
+  "parentID": "mig_cp744d0jdma04a9hq0j0",
+  "checksum": "1:65c803a996455c22b414d4de6106be8eb6d6406a1aadbea785375e6f2c255a9a",
+  "operations": [
+    {
+      "renameTable": {
+        "newName": "panels_datatable",
+        "oldName": "panels-datatable"
+      }
+    }
+  ]
+}

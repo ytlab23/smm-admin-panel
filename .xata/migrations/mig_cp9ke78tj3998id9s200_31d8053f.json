@@ -1,0 +1,14 @@
+{
+  "id": "mig_cp9ke78tj3998id9s200",
+  "parentID": "mig_cp9ke2kavkkqq1iblre0",
+  "checksum": "1:31d8053f128c486d02f0cdfa2c9e87a343232e637933c59f34eabba67a61b4d9",
+  "operations": [
+    {
+      "renameColumn": {
+        "newName": "serviceUploadDate",
+        "oldName": "updateDate",
+        "table": "panel-services"
+      }
+    }
+  ]
+}

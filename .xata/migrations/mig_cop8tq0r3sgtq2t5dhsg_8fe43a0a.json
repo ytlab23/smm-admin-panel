@@ -1,0 +1,19 @@
+{
+  "id": "mig_cop8tq0r3sgtq2t5dhsg",
+  "parentID": "mig_con992ug0s9gl2cq8h40",
+  "checksum": "1:8fe43a0af40ecbe57d8928369789c674648be566d839b2fcd77d284d1494776e",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "ProfilePic",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "users"
+      }
+    }
+  ]
+}

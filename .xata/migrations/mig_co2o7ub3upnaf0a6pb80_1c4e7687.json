@@ -1,0 +1,16 @@
+{
+  "id": "mig_co2o7ub3upnaf0a6pb80",
+  "parentID": "mig_co2o7rosi759ouh5i97g",
+  "checksum": "1:1c4e7687d3fa9c966e17b50fb476427646540c409eb9eb227edc92889834cca9",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "pageContent",
+          "type": "text"
+        },
+        "table": "pages"
+      }
+    }
+  ]
+}

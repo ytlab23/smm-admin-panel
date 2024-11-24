@@ -1,0 +1,16 @@
+{
+  "id": "mig_cp1resl0qjt8simn762g",
+  "parentID": "mig_costghb28d7pb8aajbf0",
+  "checksum": "1:93a7f662dcae526fc7e53977fcc1147ff5f95ac49e8a5175d305c610b7a79d96",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "widgetTitle",
+          "type": "string"
+        },
+        "table": "sidebarWidgets"
+      }
+    }
+  ]
+}

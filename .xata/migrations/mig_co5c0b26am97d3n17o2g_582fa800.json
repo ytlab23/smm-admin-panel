@@ -1,0 +1,19 @@
+{
+  "id": "mig_co5c0b26am97d3n17o2g",
+  "parentID": "mig_co5c06q6am97d3n17o1g",
+  "checksum": "1:582fa800caedafa73ccfe8e3f57d95c081c10099f6f7bf006285c1122ba3868a",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "paneFeaturedImage",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

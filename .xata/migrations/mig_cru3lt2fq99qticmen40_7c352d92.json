@@ -1,0 +1,17 @@
+{
+  "id": "mig_cru3lt2fq99qticmen40",
+  "parentID": "mig_crtsqfi7n5gmrvmkhg1g",
+  "checksum": "1:7c352d92ad061eafaeaac8653ebb19460ea2149f6483c4875c9003d5199341b0",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "adminPath",
+          "type": "text",
+          "defaultValue": "https://smm-admin.vercel.app/"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mig_con992ug0s9gl2cq8h40",
+  "parentID": "mig_con98u6g0s9gl2cq8h30",
+  "checksum": "1:6e16e8d39536c85c4b8776230ea0c4d58a81cf6b87116ae5691d7c8c8f6bff6b",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "widgetCodeBlock",
+          "type": "text"
+        },
+        "table": "sidebarWidgets"
+      }
+    }
+  ]
+}

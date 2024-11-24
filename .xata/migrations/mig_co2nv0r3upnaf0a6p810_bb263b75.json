@@ -1,0 +1,14 @@
+{
+  "id": "mig_co2nv0r3upnaf0a6p810",
+  "parentID": "mig_co2nuqr3upnaf0a6p7og",
+  "checksum": "1:bb263b75b89f830124e61c6bf4441a2b668145eca49781b88a6a1af6e07db75d",
+  "operations": [
+    {
+      "renameColumn": {
+        "newName": "panelWebsiteURL",
+        "oldName": "panelWebisteURL",
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

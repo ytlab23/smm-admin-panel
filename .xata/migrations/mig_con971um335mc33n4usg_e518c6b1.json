@@ -1,0 +1,16 @@
+{
+  "id": "mig_con971um335mc33n4usg",
+  "parentID": "mig_con96umg0s9gl2cq8gvg",
+  "checksum": "1:e518c6b117bc52e7e63fb0e572ab1601a66061e2f93bf15b03d8b2b321143d49",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "siteLogo",
+          "type": "file"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

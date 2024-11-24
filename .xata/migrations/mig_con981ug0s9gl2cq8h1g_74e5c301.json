@@ -1,0 +1,16 @@
+{
+  "id": "mig_con981ug0s9gl2cq8h1g",
+  "parentID": "mig_con97sepasvupdpr4c60",
+  "checksum": "1:74e5c301c84895fa9f472e7252d4c78278eac59ddc63542dd23fae3dd22328f0",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "homePanelCount",
+          "type": "int"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

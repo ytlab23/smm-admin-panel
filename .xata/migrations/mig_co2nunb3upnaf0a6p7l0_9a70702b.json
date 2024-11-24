@@ -1,0 +1,16 @@
+{
+  "id": "mig_co2nunb3upnaf0a6p7l0",
+  "parentID": "mig_co2nu7gsi759ouh5i7r0",
+  "checksum": "1:9a70702b48e154a84b5baf38c37e12c8fbfb9db5aac8d5482dd622d915dca991",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "paneFeaturedImage",
+          "type": "file"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "id": "mig_con98fepasvupdpr4c70",
+  "parentID": "mig_con981ug0s9gl2cq8h1g",
+  "checksum": "1:6954b7308c669887a655c7e15bcbb800af8e504a0fd4e849d71d87d41d72684b",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "platformServiceCount",
+          "type": "int"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

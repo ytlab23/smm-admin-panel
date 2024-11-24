@@ -1,0 +1,16 @@
+{
+  "id": "mig_cq1f8vmddrrbfjokgp00",
+  "parentID": "mig_cq1f8m629asm87a714gg",
+  "checksum": "1:a57dbd605bfdc6c8a79c666f17f52a025ede7e012a3adb35ea663e6cffd5602f",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceUploadDate",
+          "type": "datetime"
+        },
+        "table": "panel-services"
+      }
+    }
+  ]
+}

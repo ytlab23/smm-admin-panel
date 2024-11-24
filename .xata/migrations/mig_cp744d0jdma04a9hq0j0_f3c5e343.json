@@ -1,0 +1,16 @@
+{
+  "id": "mig_cp744d0jdma04a9hq0j0",
+  "parentID": "mig_cp7448lsk2gprn6li77g",
+  "checksum": "1:f3c5e3432f93be10381f08a61f095f2c1e83c6ec3719874bb674bf1d935ff3cf",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "updateDate",
+          "type": "datetime"
+        },
+        "table": "panel_services"
+      }
+    }
+  ]
+}

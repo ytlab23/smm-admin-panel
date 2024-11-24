@@ -1,0 +1,16 @@
+{
+  "id": "mig_con97sepasvupdpr4c60",
+  "parentID": "mig_con97p6g0s9gl2cq8h0g",
+  "checksum": "1:d49962b760c8e566cc247e0abb18b914163b155be9108a05b3dfeb5c49ef1811",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "homeHeaderPara",
+          "type": "text"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

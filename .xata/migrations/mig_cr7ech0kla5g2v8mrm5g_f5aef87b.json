@@ -1,0 +1,16 @@
+{
+  "id": "mig_cr7ech0kla5g2v8mrm5g",
+  "parentID": "mig_cr7e8mo5shfivtesrmkg",
+  "checksum": "1:f5aef87ba0c11d5ffd6862c41e2671e6afd9a49f7255a14b68db8c825b2964f3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "site1DeployHook",
+          "type": "text"
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

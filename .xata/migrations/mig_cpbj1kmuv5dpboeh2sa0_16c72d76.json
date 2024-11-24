@@ -1,0 +1,13 @@
+{
+  "id": "mig_cpbj1kmuv5dpboeh2sa0",
+  "parentID": "mig_cp9ke78tj3998id9s200",
+  "checksum": "1:16c72d760be4980fb6b066d24dc551bb82272eeee988dbb77d2593be1486863d",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "servicesList",
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

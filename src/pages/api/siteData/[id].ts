@@ -14,12 +14,14 @@ interface siteSettingsStructure{
     siteFavicon ?: any
     siteLog ?: any,
     homeBackgroundImage ?: any
+    emailAutoReplyContent ?: any
 }
 
 //#region Updates Site Information by ID
 export const PUT : APIRoute = async ({params, request}) =>{
     const data = await request.formData();
-    // console.log("received in API - " , data);
+    console.log("received in API - " , data);
+    console.log("ID is - " , params.id);
     const id = params.id;
     
     if (!data) {
@@ -35,10 +37,16 @@ export const PUT : APIRoute = async ({params, request}) =>{
         SiteTitle: data.get("webTitle")?.toString() || "",
         siteMetaDescription: data.get("webMetaDes")?.toString() || "",
         homeHeaderText: data.get("siteHeaderTitle")?.toString() || "",
+        emailAutoReplyContent: JSON.stringify({
+            emailFrom : data.get("emailFrom")?.toString() || "",
+            emailSubject : data.get("emailSubject")?.toString() || "",
+            emailContent : JSON.parse(data.get("emailJs_Content")?.toString() || ""),
+        }),
         homeHeaderPara: data.get("siteHeaderParagraph")?.toString() || "",
         homePanelCount: Number(data.get("sitePanelCount")?.toString() || 0),
         platformServiceCount: Number(data.get("siteServiceCount")?.toString() || 0),
         siteDeployHook: data.get("siteDeployHook")?.toString() || "",
+        
     };
 
     //#region If Logo, Favicon and other Image is not updated, it will be checked here

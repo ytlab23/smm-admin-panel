@@ -1,0 +1,16 @@
+{
+  "id": "mig_co62eu27l01k6601cnhg",
+  "parentID": "mig_co62eqq6am97d3n180g0",
+  "checksum": "1:a0a361e401baf61c718884dc4d7105814e3f38822fb27a65b3a9c40534d26c5a",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelTotalServices",
+          "type": "int"
+        },
+        "table": "panels-datatable"
+      }
+    }
+  ]
+}

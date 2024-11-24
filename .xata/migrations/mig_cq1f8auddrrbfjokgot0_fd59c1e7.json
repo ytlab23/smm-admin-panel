@@ -1,0 +1,16 @@
+{
+  "id": "mig_cq1f8auddrrbfjokgot0",
+  "parentID": "mig_cq1f85uddrrbfjokgos0",
+  "checksum": "1:fd59c1e7a439fbd08a806979e34c2cfd1d6e3e9e4b0379c394befe0cf49dc3ac",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "panelName",
+          "type": "string"
+        },
+        "table": "panel-services"
+      }
+    }
+  ]
+}

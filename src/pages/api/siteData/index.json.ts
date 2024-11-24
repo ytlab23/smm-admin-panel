@@ -10,6 +10,7 @@ export async function GET() {
             .select([
                 "SiteTitle",
                 "siteMetaDescription",
+                "emailAutoReplyContent",
                 "homeHeaderText",
                 "homeHeaderPara",
                 "homePanelCount",

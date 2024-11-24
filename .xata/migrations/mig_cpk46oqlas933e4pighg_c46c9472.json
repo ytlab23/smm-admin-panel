@@ -1,0 +1,16 @@
+{
+  "id": "mig_cpk46oqlas933e4pighg",
+  "parentID": "mig_cpk46malas933e4piggg",
+  "checksum": "1:c46c947230f622246deec5ec1dc16ecd3814d3f71692d7684a118dcae65c2b21",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceMax",
+          "type": "string"
+        },
+        "table": "panel-services"
+      }
+    }
+  ]
+}

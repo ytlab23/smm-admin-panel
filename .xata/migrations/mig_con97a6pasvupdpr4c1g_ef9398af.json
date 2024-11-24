@@ -1,0 +1,19 @@
+{
+  "id": "mig_con97a6pasvupdpr4c1g",
+  "parentID": "mig_con971um335mc33n4usg",
+  "checksum": "1:ef9398af22ef3be4770da9179ee6045ba8ad2ee817320c5d1ef91e72f255d1de",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "siteFavicon",
+          "type": "file",
+          "file": {
+            "defaultPublicAccess": true
+          }
+        },
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

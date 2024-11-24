@@ -1,0 +1,13 @@
+{
+  "id": "mig_crtsqfi7n5gmrvmkhg1g",
+  "parentID": "mig_crtsqea7n5gmrvmkhg0g",
+  "checksum": "1:c09c38b1640a813807f08d840429a17aa3d4b2fc1fb0fd3d5adc83bde0234619",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "homeBackgroundImage2",
+        "table": "siteSettings"
+      }
+    }
+  ]
+}

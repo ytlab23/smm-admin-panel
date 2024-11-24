@@ -1,0 +1,12 @@
+{
+  "id": "mig_cpdetti95h7k489463ng",
+  "parentID": "mig_cpbj1kmuv5dpboeh2sa0",
+  "checksum": "1:93c7773c44df4d373f746a02167b45dd58a7322fef1cb4217595c650c9cc009f",
+  "operations": [
+    {
+      "addTable": {
+        "table": "ratingOtherSites"
+      }
+    }
+  ]
+}

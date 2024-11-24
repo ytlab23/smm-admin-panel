@@ -1,0 +1,16 @@
+{
+  "id": "mig_codduug0j6r1cfossrkg",
+  "parentID": "mig_coddur66fopstmtchadg",
+  "checksum": "1:041b954462860c5c34b7504bb287faa436f28149d409431398d34469f3dbbb22",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "serviceColor",
+          "type": "string"
+        },
+        "table": "services"
+      }
+    }
+  ]
+}
