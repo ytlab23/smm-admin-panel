@@ -1,0 +1,386 @@
+---
+import TextArea from "./components[admin]/TextArea.astro";
+import TextInput from "./components[admin]/TextInput.astro";
+import { isAdminLoggedIn } from "./js/utils";
+import AdminLayout from "./layouts/adminLayout.astro";
+
+const adminCookie = Astro.cookies.get("admin");
+
+if (!isAdminLoggedIn(adminCookie)) {
+    return Astro.redirect("/admin/signin/");
+}
+
+var messageToShow = "";
+let showOverlay = false;
+
+if (Astro.request.method === "POST") {
+    showOverlay = true;
+    try {
+        const data = await Astro.request.formData();
+        // console.log("Form Data at client side - ", data);
+        
+        if(data.get("widgetTitle") != null){
+            if(data.get("widgetId") != null){
+                const response = await fetch(
+                    Astro.site + "api/sidebarWidgets/"+ data.get("widgetId")?.toString(),
+                    {
+                        method: "PUT",
+                        body: data,
+                    },
+                );
+        
+                const APIResponse = await response.json();
+                if (APIResponse.message == "Sidebar Widget Data Updated Successfully") {
+                    messageToShow =
+                        "Sidebar Widget Data Updated Successfully.";
+                }
+            }
+            else{
+                const response = await fetch(
+                    Astro.site + "api/sidebarWidgets.json",
+                    {
+                        method: "POST",
+                        body: data,
+                    },
+                );
+        
+                const APIResponse = await response.json();
+                if (APIResponse.message == "Sidebar Widget Data Saved Successfully") {
+                    messageToShow =
+                        "New Sidebar Widget is Added.";
+                }
+            }
+        }
+        else{
+            const response = await fetch(
+                Astro.site + "api/siteData/" + import.meta.env.SiteSettingsID1,
+                {
+                    method: "PUT",
+                    body: data,
+                },
+            );
+    
+            const APIResponse = await response.json();
+            if (APIResponse.message == "Site Setting Data Updated Successfully") {
+                messageToShow =
+                    "Site Setting Data Saved. Please Redeploy your site to see the changes";
+            }
+        }
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error(error.message);
+        }
+    }
+}
+
+//Fetching Site Settings
+const allSiteFetch: any = await fetch(Astro.site + "api/siteData.json").then(
+    (Response) => Response.json(),
+);
+
+const allSidebarWidgetsFetch: any = await fetch(Astro.site + "api/sidebarWidgets.json").then(
+    (Response) => Response.json(),
+);
+---
+
+<AdminLayout pageName="Site Settings" pageTitle="Site Settings">
+    <span class="p-5 flex items-center relative flex-col w-full">
+        <form method="post" class="w-full flex gap-2 flex-col-reverse lg:flex-row">
+            <div class="fieldsWrapper lg:w-10/12 w-full">
+                <h2 class="mb-4 text-xl font-bold">General Settings</h2>
+                <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
+                    <span class="flex gap-2">
+                        <span class="flex flex-col items-center gap-4 w-1/2">
+                            <label class="w-full text-left">Site Logo *</label>
+                            <span
+                                class="flex flex-col justify-center items-center gap-2 w-full lg:px-12 px-3 py-3 border-black border-2 border-dashed rounded-xl"
+                            >
+                                <img
+                                    id="uploadedImageLogo"
+                                    class="size-[110px] object-contain rounded-md"
+                                    src={allSiteFetch[0].siteLog.url != ""
+                                        ? allSiteFetch[0].siteLog.url
+                                        : "/assets/images/placeholderImage.jpg"}
+                                />
+                                <!-- {
+                                        (panelInfo.data.paneFeaturedImage != null)
+                                        ? ( panelInfo.data.paneFeaturedImage.url == "" ) ? "/assets/images/placeholderImage.jpg" : panelInfo.data.paneFeaturedImage.url 
+                                        : "/assets/images/placeholderImage.jpg"
+                                    } -->
+                                <input
+                                    id="uploadInputLogo"
+                                    name="uploadInputLogo"
+                                    type="file"
+                                    class="text-xs lg:w-fit"
+                                    accept="image/*"
+                                />
+                            </span>
+                        </span>
+
+                        <span class="flex flex-col items-center gap-4 w-1/2">
+                            <label class="w-full text-left"
+                                >Site Favicon *</label
+                            >
+                            <span
+                                class="flex flex-col justify-center items-center gap-2 w-full lg:px-12 px-3 py-3 border-black border-2 border-dashed rounded-xl"
+                            >
+                                <img
+                                    id="uploadedImageFavicon"
+                                    class="size-[110px] object-cover rounded-md"
+                                    src={allSiteFetch[0].siteFavicon.url != ""
+                                        ? allSiteFetch[0].siteFavicon.url
+                                        : "/assets/images/placeholderImage.jpg"}
+                                />
+                                <!-- {
+                                        (panelInfo.data.paneFeaturedImage != null)
+                                        ? ( panelInfo.data.paneFeaturedImage.url == "" ) ? "/assets/images/placeholderImage.jpg" : panelInfo.data.paneFeaturedImage.url 
+                                        : "/assets/images/placeholderImage.jpg"
+                                    } -->
+                                <input
+                                    id="uploadInputFav"
+                                    name="uploadInputFav"
+                                    type="file"
+                                    class="text-xs lg:w-fit"
+                                    accept="image/*"
+                                />
+                            </span>
+                        </span>
+                    </span>
+
+                    <TextInput
+                        textValue={allSiteFetch[0].SiteTitle}
+                        isRequired={true}
+                        placeholder="Example - My SMM Compare Site"
+                        textBoxId="webTitle"
+                        textLabelText="Website Title"
+                    />
+
+                    <TextArea
+                        textValue={allSiteFetch[0].siteMetaDescription}
+                        isRequired={true}
+                        placeholder="130 Characters Meta Description"
+                        textBoxId="webMetaDes"
+                        textLabelText="Site Meta Description"
+                    />
+                </div>
+
+                <span
+                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
+                ></span>
+                <h2 class="mb-4 text-xl font-bold">Homepage Settings</h2>
+                <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
+                    <div class="imageFlex flex flex-col lg:flex-row w-full gap-1">
+                        <!-- Site 1 Homepage Background Image -->
+                        <span class="flex flex-col items-center gap-4 w-full">
+                            <label class="w-full text-center">Site Homepage Background Image *</label>
+                            <span class="flex flex-col justify-center items-center gap-2 w-full lg:px-12 px-3 py-3 border-black border-2 border-dashed rounded-xl">
+                                <img
+                                    id="uploadedImageHeaderBg"
+                                    class="w-1/2 max-h-32 min-h-20 object-cover rounded-md"
+                                    src={(allSiteFetch[0].homeBackgroundImage != null && allSiteFetch[0].homeBackgroundImage.url) !=
+                                    ""
+                                        ? allSiteFetch[0].homeBackgroundImage.url
+                                        : "/assets/images/placeholderImage.jpg"}
+                                />
+                                <input
+                                    id="uploadInputHeaderBg"
+                                    name="uploadInputHeaderBg"
+                                    type="file"
+                                    class="text-xs lg:w-fit"
+                                    accept="image/*"
+                                />
+                            </span>
+                        </span>
+                    </div>
+                    <TextInput
+                        textValue={allSiteFetch[0].homeHeaderText}
+                        isRequired={true}
+                        placeholder="Best SMM Panel"
+                        textBoxId="siteHeaderTitle"
+                        textLabelText="Header Title"
+                    />
+                    <TextInput
+                        textValue={allSiteFetch[0].homeHeaderPara}
+                        isRequired={true}
+                        placeholder="Best SMM Panel Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem ipsum blanditiis in officiis distinctio."
+                        textBoxId="siteHeaderParagraph"
+                        textLabelText="Header Paragraph"
+                    />
+                </div>
+
+                <span
+                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
+                ></span>
+
+                <h2 class="mb-4 text-xl font-bold">Functional Settings</h2>
+                <div class="fields lg:w-2/3 w-full flex flex-col gap-3">
+                    <TextInput
+                        textValue={allSiteFetch[0].homePanelCount}
+                        inputType="number"
+                        isRequired={true}
+                        placeholder="10"
+                        textBoxId="sitePanelCount"
+                        textLabelText="Number of Panels to show in Home Page"
+                    />
+                    <TextInput
+                        textValue={allSiteFetch[0].platformServiceCount}
+                        inputType="number"
+                        isRequired={true}
+                        placeholder="10"
+                        textBoxId="siteServiceCount"
+                        textLabelText="Number of Services that will be shown per page in Services Page"
+                    />
+                    <TextInput
+                        textValue={allSiteFetch[0].siteDeployHook}
+                        inputType="text"
+                        isRequired={true}
+                        placeholder="https://api.vercel.com/v1/integrations/deploy/prj_xxxxxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxx"
+                        textBoxId="siteDeployHook"
+                        textLabelText="Site Deployment Hook URL"
+                    />
+                </div>
+
+                <span
+                    class="divider border-t-2 border-dashed border-gray-600 my-5 block"
+                ></span>
+
+                <!-- Hidden Fields for File/Image Upload -->
+                <input type="hidden" name="logoImageName" id="logoImageName" />
+                <input type="hidden" name="logoImageBase64" id="logoImageBase64" />
+                <input type="hidden" name="logoImageFileType" id="logoImageFileType" />
+
+                <input type="hidden" name="faviconImageName" id="faviconImageName" />
+                <input type="hidden" name="faviconImageBase64" id="faviconImageBase64" />
+                <input type="hidden" name="faviconImageFileType" id="faviconImageFileType" />
+
+                <input type="hidden" name="homepgBgImageName" id="homepgBgImageName" />
+                <input type="hidden" name="homepgBgImageBase64" id="homepgBgImageBase64" />
+                <input type="hidden" name="homepgBgImageFileType" id="homepgBgImageFileType" />
+
+                <input type="hidden" name="homepgBgImageName_2" id="homepgBgImageName_2" />
+                <input type="hidden" name="homepgBgImageBase64_2" id="homepgBgImageBase64_2" />
+                <input type="hidden" name="homepgBgImageFileType_2" id="homepgBgImageFileType_2" />
+            </div>
+
+            <button
+                type="submit"
+                class="size-fit sticky top-4 w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize"
+                ><i class="fa-solid fa-play"></i> Save</button
+            >
+        </form>
+
+        <div class="Overlay modalForm top-0 invisible absolute size-full z-[1] bg-[#525252a5] p-6">
+            <form
+                method="post"
+                class="w-full sticky top-[10vh] p-6 bg-[#f0f8ff] rounded-md flex flex-col justify-center items-center gap-5">
+                <i class="closeBtn modalForm absolute -right-2 -top-2 cursor-pointer fa-solid fa-circle-xmark text-xl"></i>
+                <div class="formContainer flex justify-center w-full lg:gap-24">
+                    <div class="fields flex flex-col gap-5 lg:w-2/4 w-full">
+                        <TextInput
+                            isRequired={true}
+                            placeholder="Widget Title"
+                            textBoxId="widgetTitle"
+                            textLabelText="Widget Title"
+                        />
+    
+                        <TextArea
+                            isRequired={true}
+                            placeholder="<Write or Paste HTML Code here/>"
+                            textBoxId="widgetHTMLCode"
+                            textLabelText="Write or Paste HTML Code here"
+                        />
+                        <input type="hidden" name="widgetId" id="widgetId">
+                    </div>
+                </div>
+    
+                <button id="formAddWidgetBtn"
+                    type="submit"
+                    class="lg:block flex gap-2 items-center size-fit w-auto px-5 py-3 text-white rounded-lg bg-[#5344f5] hover:bg-[#3d32b3] capitalize">
+                    <i class="fa-solid fa-play"></i> Add Widget
+                </button>
+            </form>
+        </div>
+    </span>
+    
+    {
+        messageToShow && (
+            <span
+                class="toast hidden"
+                id="toast"
+                data-message={messageToShow}
+                data-destination={"/"}
+            />
+        )
+    }
+</AdminLayout>
+
+<script is:inline>
+    //LOGO
+    document
+        .getElementById("uploadInputLogo")
+        .addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = function () {
+                    const imageDataURL = reader.result;
+                    document.getElementById("logoImageName").value = file.name;
+                    document.getElementById("logoImageBase64").value =
+                        imageDataURL.split("base64,")[1];
+                    document.getElementById("logoImageFileType").value =
+                        file.type;
+                    document.getElementById("uploadedImageLogo").src =
+                        imageDataURL;
+                };
+            }
+        });
+    //SITE FAVICON
+    document
+        .getElementById("uploadInputFav")
+        .addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = function () {
+                    const imageDataURL = reader.result;
+                    document.getElementById("faviconImageName").value =
+                        file.name;
+                    document.getElementById("faviconImageBase64").value =
+                        imageDataURL.split("base64,")[1];
+                    document.getElementById("faviconImageFileType").value =
+                        file.type;
+                    document.getElementById("uploadedImageFavicon").src =
+                        imageDataURL;
+                };
+            }
+        });
+    //Site 1 HOMEPAGE BG
+    document
+        .getElementById("uploadInputHeaderBg")
+        .addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+
+                reader.onload = function () {
+                    const imageDataURL = reader.result;
+                    document.getElementById("homepgBgImageName").value =
+                        file.name;
+                    document.getElementById("homepgBgImageBase64").value =
+                        imageDataURL.split("base64,")[1];
+                    document.getElementById("homepgBgImageFileType").value =
+                        file.type;
+                    document.getElementById("uploadedImageHeaderBg").src =
+                        imageDataURL;
+                };
+            }
+        });
+</script>
