@@ -9,8 +9,9 @@ if (Astro.request.method === "POST") {
       const data = await Astro.request.formData();
       isFormSubmitted = true;
       // console.log(data);
-
+      
       const response = await fetch(Astro.site + "api/adminLogin.json", {
+      // const response = await fetch("http://localhost:4321/" + "api/adminLogin.json", {
          method: "POST",
          body: data,
       });
@@ -32,6 +33,9 @@ if (Astro.request.method === "POST") {
          form_message = "Wrong Username or Password. Check your typos and try again."
          isFormSubmitted = false;
       }
+      else
+         console.log(APIResponse);
+         
    } catch (error) {
       if (error instanceof Error) {
          console.error(error.message);
