@@ -34,7 +34,8 @@ export const POST: APIRoute = async ({ request }) => {
 
         let foundUser;
         for (let i = 0; i < records.length; i++) {
-            foundUser = records[i];
+            if(records[i].username == userData.get("username")?.toString())
+                foundUser = records[i];
         }
 
         /* const userID = await xata.db.users.search(userData.get("username")?.toString() || "", {
